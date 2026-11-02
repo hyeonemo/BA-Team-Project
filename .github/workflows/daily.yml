@@ -1,0 +1,32 @@
+name: daily-alert
+on:
+  schedule:
+    - cron: "30 22 * * *"      # 매일 07:30 KST (깃허브 예약은 몇 분~수십 분 늦을 수 있음)
+  workflow_dispatch: {}        # 수동 실행 버튼
+permissions:
+  contents: write
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    env:
+      NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+      NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      PAGE_URL: ${{ vars.PAGE_URL }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11", cache: pip }
+      - run: pip install -r requirements.txt
+      - run: python scripts/collect.py
+      - run: python scripts/compute.py
+      - run: cd scripts && python report.py
+      - name: 발송 (월요일이면 주간 브리핑 포함)
+        run: |
+          if [ "$(TZ=Asia/Seoul date +%u)" = "1" ]; then python scripts/notify.py --weekly; else python scripts/notify.py; fi
+      - name: 결과 저장
+        run: |
+          git config user.name "alert-bot"; git config user.email "bot@users.noreply.github.com"
+          git add data docs
+          git commit -m "daily run $(date -u +%F)" || echo "변경 없음"
+          git push
