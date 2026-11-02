@@ -1,0 +1,64 @@
+{
+ "asof": "2026-11-01",
+ "threshold": 1.0,
+ "market_common_z": 0.15,
+ "products": {
+  "아토베리어365 크림": {
+   "mode": "score",
+   "score": 0.109,
+   "ratio": 0.29,
+   "status": "알림 없음",
+   "contrib": {
+    "장벽크림": {
+     "z_adj": 0.18,
+     "weight": 0.26,
+     "part": 0.047
+    },
+    "세라마이드": {
+     "z_adj": 0.31,
+     "weight": 0.2,
+     "part": 0.062
+    }
+   },
+   "own_z": 0.48,
+   "last_event": "2026-09-10"
+  },
+  "에이시카365": {
+   "mode": "score",
+   "score": 0.247,
+   "ratio": 0.87,
+   "status": "알림 없음",
+   "contrib": {
+    "시카": {
+     "z_adj": 0.75,
+     "weight": 0.33,
+     "part": 0.247
+    }
+   },
+   "own_z": -1.71,
+   "last_event": "2026-10-07"
+  },
+  "테라크네365": {
+   "mode": "own",
+   "score": -0.682,
+   "ratio": -0.68,
+   "status": "알림 없음",
+   "contrib": {},
+   "own_z": -0.68,
+   "last_event": "2026-10-12"
+  },
+  "리제덤365(PDRN 캡슐크림)": {
+   "mode": "own",
+   "score": -0.66,
+   "ratio": -0.66,
+   "status": "진행(둔화)",
+   "contrib": {},
+   "own_z": -0.66,
+   "last_event": "2026-10-18"
+  }
+ },
+ "reference": {
+  "에스트라": 0.47,
+  "아토베리어": 0.28
+ }
+}
