@@ -3,7 +3,7 @@
 - 환각 방지: 가격과 함께 '페이지에 적힌 원문'을 받아, 원문 안에 그 숫자가 실제로 있는지 검사한다(없으면 불일치 표시).
 - 키(GEMINI_API_KEY)는 GitHub Secrets 에만 둔다. 모델 이름은 환경변수 GEMINI_MODEL 로 바꿀 수 있다.
 """
-import os, re, json, urllib.parse, urllib.request, urllib.error
+import os, re, json, time, urllib.parse, urllib.request, urllib.error
 import price_probe as pp
 
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
@@ -34,7 +34,7 @@ def _call(url):
     body = {"contents": [{"parts": [{"text": PROMPT + url}]}], "tools": [{"url_context": {}}], "generationConfig": {"temperature": 0}}
     req = urllib.request.Request(f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
                                  data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
-    r = json.load(urllib.request.urlopen(req, timeout=90))
+    r = json.load(urllib.request.urlopen(req, timeout=120))
     cand = r["candidates"][0]
     text = "".join(p.get("text", "") for p in cand.get("content", {}).get("parts", []))
     meta = cand.get("urlContextMetadata", {}).get("urlMetadata", [])
@@ -44,20 +44,32 @@ def _call(url):
     return data, status
 
 NOTES = []
+_cands, _ci = [], 0
 def gemini(url):
-    """요청한 모델이 없으면(404) 지금 쓸 수 있는 모델 목록에서 최신 flash 계열을 골라 다시 시도한다."""
-    global MODEL, _tried
-    try:
-        return _call(url)
-    except urllib.error.HTTPError as e:
-        if e.code != 404 or _tried: raise
-        _tried = True
-        names = list_models(); cands = pick(names)
-        NOTES.append(f"요청한 모델 `{MODEL}` 은(는) 사용할 수 없어 자동 선택: `{cands[0] if cands else '없음'}`")
-        NOTES.append("generateContent 가능한 모델: " + ", ".join(names[:40]))
-        if not cands: raise
-        MODEL = cands[0]
-        return _call(url)
+    """404(모델 없음)이면 쓸 수 있는 모델을 골라 바꾸고, 503·429·시간초과(붐빔)이면 기다렸다 재시도, 계속 안 되면 다음 모델로 넘어간다."""
+    global MODEL, _tried, _cands, _ci
+    fails = 0
+    for attempt in range(8):
+        try:
+            return _call(url)
+        except urllib.error.HTTPError as e:
+            if e.code == 404 and not _tried:
+                _tried = True; names = list_models(); _cands = pick(names)
+                NOTES.append(f"요청한 모델 `{MODEL}` 은(는) 사용할 수 없어 목록에서 선택: " + ", ".join(_cands[:6]))
+                NOTES.append("generateContent 가능한 모델: " + ", ".join(names[:60]))
+                if not _cands: raise
+                MODEL = _cands[0]; continue
+            if e.code in (429, 500, 503):
+                fails += 1
+                if fails >= 3 and _cands and _ci + 1 < len(_cands):
+                    _ci += 1; MODEL = _cands[_ci]; fails = 0
+                    NOTES.append(f"붐벼서 다음 모델로 변경: `{MODEL}`")
+                else: time.sleep(min(60, 5 * 2 ** fails))
+                continue
+            raise
+        except (TimeoutError, OSError) as e:
+            fails += 1; time.sleep(min(60, 5 * 2 ** fails)); continue
+    raise RuntimeError("재시도 초과(서버 붐빔)")
 
 def ours(url):
     try:
@@ -84,7 +96,7 @@ def main():
     out = [f"## Gemini 가격 읽기 시험", "", "| 사이트 | 제목 | 우리 접속 | Gemini 가격 | 가져오기 상태 | 검증 | 원문 |", "|---|---|---|---|---|---|---|"]
     out += [f"| {' | '.join(r)} |" for r in rows]
     blocked = [r for r in rows if r[2].startswith(("막힘", "robots")) and r[3].endswith("원")]
-    out += ["", *[f"- {n}" for n in NOTES], ""]
+    out += ["", *[f"- {n}" for n in dict.fromkeys(NOTES)], f"- 최종 사용 모델: `{MODEL}`", ""]
     out += ["", f"**우리는 못 읽었는데 Gemini가 가격을 읽은 페이지: {len(blocked)}개**"]
     text = "\n".join(out); print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write(text + "\n")
