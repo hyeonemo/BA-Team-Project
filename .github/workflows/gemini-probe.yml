@@ -1,0 +1,26 @@
+name: gemini-probe
+on:
+  workflow_dispatch:
+    inputs:
+      query:
+        description: "검색어 (예: 에스트라 에이시카365 가격)"
+        default: "에스트라 에이시카365 가격"
+      model:
+        description: "Gemini 모델 이름"
+        default: "gemini-2.5-flash"
+permissions:
+  contents: read
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: python scripts/gemini_probe.py
+        env:
+          NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
+          NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PROBE_QUERY: ${{ inputs.query }}
+          GEMINI_MODEL: ${{ inputs.model }}
