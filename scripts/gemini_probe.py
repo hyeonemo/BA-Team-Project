@@ -14,7 +14,22 @@ PROMPT = """아래 URL의 상품 페이지를 읽고 JSON 한 개만 출력하�
 규칙: 페이지에서 직접 확인한 값만 쓰고, 못 읽었거나 가격이 없으면 readable:false 또는 null 로 두세요. 추측·계산 금지. 세트·묶음·할인 전 가격이 있으면 현재 판매가를 쓰세요.
 URL: """
 
-def gemini(url):
+_tried = False
+def list_models():
+    key = os.environ["GEMINI_API_KEY"].strip()
+    req = urllib.request.Request("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", headers={"x-goog-api-key": key})
+    ms = json.load(urllib.request.urlopen(req, timeout=30)).get("models", [])
+    return [m["name"].split("/")[-1] for m in ms if "generateContent" in m.get("supportedGenerationMethods", [])]
+
+def pick(names):
+    """flash 계열 중 최신 버전을 앞에 둔다(lite·이미지·음성·실시간 등은 제외)."""
+    bad = ("lite", "image", "tts", "live", "audio", "embedding", "robotics", "vision", "customtools", "computer")
+    c = [n for n in names if "flash" in n and not any(b in n for b in bad)]
+    def ver(n):
+        m = re.search(r"gemini-(\d+(?:\.\d+)?)", n); return (float(m.group(1)) if m else 0, "preview" not in n, "exp" not in n, n)
+    return sorted(c, key=ver, reverse=True)
+
+def _call(url):
     key = os.environ["GEMINI_API_KEY"].strip()
     body = {"contents": [{"parts": [{"text": PROMPT + url}]}], "tools": [{"url_context": {}}], "generationConfig": {"temperature": 0}}
     req = urllib.request.Request(f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
@@ -27,6 +42,22 @@ def gemini(url):
     m = re.search(r"\{.*\}", text, re.S)
     data = json.loads(m.group(0)) if m else {}
     return data, status
+
+NOTES = []
+def gemini(url):
+    """요청한 모델이 없으면(404) 지금 쓸 수 있는 모델 목록에서 최신 flash 계열을 골라 다시 시도한다."""
+    global MODEL, _tried
+    try:
+        return _call(url)
+    except urllib.error.HTTPError as e:
+        if e.code != 404 or _tried: raise
+        _tried = True
+        names = list_models(); cands = pick(names)
+        NOTES.append(f"요청한 모델 `{MODEL}` 은(는) 사용할 수 없어 자동 선택: `{cands[0] if cands else '없음'}`")
+        NOTES.append("generateContent 가능한 모델: " + ", ".join(names[:40]))
+        if not cands: raise
+        MODEL = cands[0]
+        return _call(url)
 
 def ours(url):
     try:
@@ -50,9 +81,10 @@ def main():
             rows.append((dom, t, o, g, st, check, quote[:30]))
         except urllib.error.HTTPError as e: rows.append((dom, t, o, f"Gemini 오류 {e.code}", e.read()[:80].decode("utf-8", "ignore"), "", ""))
         except Exception as e: rows.append((dom, t, o, f"Gemini 오류 {type(e).__name__}", str(e)[:60], "", ""))
-    out = [f"## Gemini 가격 읽기 시험 (모델 {MODEL})", "", "| 사이트 | 제목 | 우리 접속 | Gemini 가격 | 가져오기 상태 | 검증 | 원문 |", "|---|---|---|---|---|---|---|"]
+    out = [f"## Gemini 가격 읽기 시험", "", "| 사이트 | 제목 | 우리 접속 | Gemini 가격 | 가져오기 상태 | 검증 | 원문 |", "|---|---|---|---|---|---|---|"]
     out += [f"| {' | '.join(r)} |" for r in rows]
     blocked = [r for r in rows if r[2].startswith(("막힘", "robots")) and r[3].endswith("원")]
+    out += ["", *[f"- {n}" for n in NOTES], ""]
     out += ["", f"**우리는 못 읽었는데 Gemini가 가격을 읽은 페이지: {len(blocked)}개**"]
     text = "\n".join(out); print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write(text + "\n")
