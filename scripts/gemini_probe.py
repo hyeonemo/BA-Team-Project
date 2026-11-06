@@ -8,6 +8,10 @@ import price_probe as pp
 
 MODEL = os.environ.get("GEMINI_MODEL", "gemini-2.5-flash")
 N = int(os.environ.get("PROBE_N", "12"))
+MAXPAGES = int(os.environ.get("PROBE_MAXPAGES", "6"))
+TOTAL = int(os.environ.get("PROBE_TOTAL_SEC", "240"))
+PER = int(os.environ.get("PROBE_PER_SEC", "60"))
+T0 = time.time()
 QUERY = os.environ.get("PROBE_QUERY", "에스트라 에이시카365 가격")
 PROMPT = """아래 URL의 상품 페이지를 읽고 JSON 한 개만 출력하세요(설명 금지).
 {"readable": true/false, "product_name": "페이지의 상품명", "volume": "용량(예: 60ml) 또는 null", "price_krw": 숫자 또는 null, "price_quote": "페이지에 적힌 가격 문구 원문 그대로 또는 null"}
@@ -34,7 +38,7 @@ def _call(url):
     body = {"contents": [{"parts": [{"text": PROMPT + url}]}], "tools": [{"url_context": {}}], "generationConfig": {"temperature": 0}}
     req = urllib.request.Request(f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
                                  data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
-    r = json.load(urllib.request.urlopen(req, timeout=120))
+    r = json.load(urllib.request.urlopen(req, timeout=45))
     cand = r["candidates"][0]
     text = "".join(p.get("text", "") for p in cand.get("content", {}).get("parts", []))
     meta = cand.get("urlContextMetadata", {}).get("urlMetadata", [])
@@ -48,8 +52,10 @@ _cands, _ci = [], 0
 def gemini(url):
     """404(모델 없음)이면 쓸 수 있는 모델을 골라 바꾸고, 503·429·시간초과(붐빔)이면 기다렸다 재시도, 계속 안 되면 다음 모델로 넘어간다."""
     global MODEL, _tried, _cands, _ci
-    fails = 0
+    fails = 0; t1 = time.time()
     for attempt in range(8):
+        if time.time() - t1 > PER or time.time() - T0 > TOTAL:
+            raise RuntimeError('붐벼서 못 읽음(시간 한도)')
         try:
             return _call(url)
         except urllib.error.HTTPError as e:
@@ -64,11 +70,11 @@ def gemini(url):
                 if fails >= 3 and _cands and _ci + 1 < len(_cands):
                     _ci += 1; MODEL = _cands[_ci]; fails = 0
                     NOTES.append(f"붐벼서 다음 모델로 변경: `{MODEL}`")
-                else: time.sleep(min(60, 5 * 2 ** fails))
+                else: time.sleep(min(15, 5 * 2 ** (fails - 1)))
                 continue
             raise
         except (TimeoutError, OSError) as e:
-            fails += 1; time.sleep(min(60, 5 * 2 ** fails)); continue
+            fails += 1; time.sleep(min(15, 5 * 2 ** (fails - 1))); continue
     raise RuntimeError("재시도 초과(서버 붐빔)")
 
 def ours(url):
@@ -81,7 +87,9 @@ def ours(url):
 
 def main():
     items = pp.search(QUERY, N); rows = []
+    items = sorted(items, key=lambda it: not any(d in it['link'] for d in ('oliveyoung','hwahae','musinsa','ssfshop','shinsegae')))[:MAXPAGES]
     for it in items:
+        if time.time() - T0 > TOTAL: rows.append((urllib.parse.urlparse(it['link']).netloc, pp.strip_tags(it['title'])[:36], '-', '시간 한도로 건너뜀', '', '', '')); continue
         url = it["link"]; dom = urllib.parse.urlparse(url).netloc; t = pp.strip_tags(it["title"])[:36]
         o, op = ours(url)
         try:
