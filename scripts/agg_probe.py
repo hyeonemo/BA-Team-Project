@@ -4,13 +4,13 @@
 """
 import os, re, sys
 import price_probe as pp
-
+ 
 URLS = [u for u in os.environ.get("PROBE_URLS", "").split() if u] or [
     "https://prod.danawa.com/info/?pcode=94975556",
     "https://price.enuri.com/catalog/136695232",
 ]
 MALLS = ["쿠팡", "11번가", "G마켓", "지마켓", "옥션", "SSG", "롯데온", "올리브영", "네이버", "스마트스토어", "인터파크", "위메프", "티몬", "컬리", "카카오", "아모레", "공식", "화해", "GS샵", "CJ온스타일", "현대Hmall", "이마트", "홈플러스", "하이마트"]
-
+ 
 def main():
     out = ["## 가격비교 페이지 직접 읽기 시험", ""]
     for u in URLS:
@@ -31,7 +31,18 @@ def main():
         out += ["| 판매처 이름 근처 글자(앞 20자~뒤 60자) |", "|---|"] + [f"| {r} |" for r in rows[:15]]
         if not rows: out.append("| (판매처 이름 근처에서 가격을 못 찾음) |")
         out += [""]
+        # 스크립트 안(원본 HTML)에 판매처 목록 데이터가 들어 있는지 본다
+        rawc = {m: page.count(m) for m in MALLS if page.count(m)}
+        out += [f"- 원본 HTML(스크립트 포함) 안 판매처 이름 횟수: {rawc if rawc else '없음'}", ""]
+        raws = []
+        for m in ("쿠팡", "11번가", "G마켓", "옥션", "롯데", "SSG", "이마트", "신세계", "인터파크", "위메프", "패션플러스"):
+            for mt in list(re.finditer(re.escape(m), page))[:2]:
+                seg = re.sub(r"\s+", " ", page[max(0, mt.start() - 50): mt.end() + 90])
+                if re.search(r"\d{4,6}", seg): raws.append(seg)
+        out += ["| 원본 HTML 안 판매처 근처(앞 50자~뒤 90자) |", "|---|"] + [f"| `{r}` |".replace("|", "\\|", 0) for r in raws[:20]]
+        if not raws: out.append("| (원본에서도 판매처 근처 가격 숫자를 못 찾음) |")
+        out += [""]
     text = "\n".join(out); print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write(text + "\n")
-
+ 
 if __name__ == "__main__": main()
