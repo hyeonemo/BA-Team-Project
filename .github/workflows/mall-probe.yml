@@ -7,7 +7,7 @@ on:
         default: "에스트라 에이시카365 리페어 크림 60ml"
       must:
         description: "상품명에 꼭 있어야 하는 말(쉼표로)"
-        default: "리페어,크림"
+        default: "에이시카,리페어,크림"
       vol:
         description: "용량 숫자(ml)"
         default: "60"
@@ -32,6 +32,6 @@ jobs:
           PROBE_MUST: ${{ inputs.must }}
           PROBE_VOL: ${{ inputs.vol }}
           GEMINI_MODEL: ${{ inputs.model }}
-          PROBE_TOTAL_SEC: "420"
+          PROBE_TOTAL_SEC: "540"
           PROBE_PER_MALL: "3"
-          PROBE_PER_SEC: "60"
+          PROBE_PER_SEC: "150"
