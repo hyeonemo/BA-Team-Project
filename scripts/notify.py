@@ -1,11 +1,20 @@
 """latest.json -> 슬랙 메시지 문구 만들기 + Webhook 발송(+중복 방지). 환경변수 SLACK_WEBHOOK_URL 이 없으면 화면에만 출력(드라이런)."""
 import os, json, sys, urllib.request
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pandas as pd
+try:
+    import prices
+except Exception:      # 가격 모듈에 문제가 있어도 알림은 계속 나가게 한다
+    prices = None
  
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 CFG = json.load(open(os.path.join(ROOT, "config.json"), encoding="utf-8"))
 SENT = os.path.join(ROOT, "data", "sent.json")
 PAGE_URL = os.environ.get("PAGE_URL", "")
+ 
+def price_lines(p):
+    try: return prices.lines_for(p) if prices else []
+    except Exception: return []
  
 def _md(s): return f"{int(s[5:7])}/{int(s[8:10])}"
  
@@ -21,6 +30,7 @@ def progress_text(res, p, r, ev, refline):
     elif ev["phase"] == "완화": l1, l2 = f"• 평소 폭의 *{now:.1f}배*로 내려오는 중 ({chg})", f"• 판단: 정점에서 꺾였지만 기준({thr:.1f}배)보다는 높다 ({pct})"
     else: l1, l2 = f"• 기준({thr:.1f}배) 아래로 내려왔다 ({chg})", f"• 이번 급등: 정점 {peak:.1f}배({_md(ev['peak_day'])}), 시작부터 {ev['day_n']}일"
     lines = [head, l1, l2, f"• 참고: {refline} · 시장 공통 변화 {res['market_common_z']:+.1f}"]
+    if ev["phase"] != "종료": lines += price_lines(p)
     if PAGE_URL: lines.append(f"• 자세히: {PAGE_URL}")
     return "\n".join(lines)
  
@@ -44,6 +54,7 @@ def daily_messages(res):
             lines = [head, f"• 제품 자체 검색이 평소 폭의 *{r['ratio']:.1f}배* 올랐다 (기준 {res['threshold']:.1f}배)",
                      "• 연결 키워드 없음: 성분·카테고리 연결이 우연 수준이라 제품 자체 검색만 감지한다"]
         lines.append(f"• 참고: {refline} · 시장 공통 변화 {res['market_common_z']:+.1f}")
+        lines += price_lines(p)
         if PAGE_URL: lines.append(f"• 자세히: {PAGE_URL}")
         msgs.append((f"{res['asof']}|{p}|{st}", "\n".join(lines)))
     if not msgs:
@@ -68,6 +79,9 @@ def main(dry=False):
     res = json.load(open(os.path.join(ROOT, "data", "latest.json"), encoding="utf-8"))
     sent = json.load(open(SENT)) if os.path.exists(SENT) else []
     url = (os.environ.get("SLACK_WEBHOOK_URL") or "").strip()
+    if prices and url and not dry:
+        try: prices.run_all()
+        except Exception as e: print("가격 갱신 실패(알림은 계속):", e)
     todo = daily_messages(res)
     if "--weekly" in sys.argv: todo.append(weekly_message(res))
     for key, text in todo:
