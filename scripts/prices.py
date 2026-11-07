@@ -71,7 +71,7 @@ def run_all():
                 r.update(url=url, title=title, page_cut=cut, n_sellers=len(sellers), sellers=sellers[:14])
                 if not sellers: r["error"] = "판매처 목록을 못 읽음(페이지 구조가 바뀌었을 수 있음)"
                 else:
-                    low = min(s["price"] for s in sellers)
+                    low = min(s["price"] for s in sellers if not s.get("card")) if any(not s.get("card") for s in sellers) else min(s["price"] for s in sellers)   # 페이지의 '최저가'는 카드 조건 가격을 뺀 값
                     r["ok"] = True; r["check"] = "최저 판매가가 페이지가 밝힌 최저가와 일치" if price and abs(price - low) < 1 else "페이지가 밝힌 최저가와 다름(참고만)"
         except Exception as e: r["error"] = f"{type(e).__name__}: {e}"
         res["items"][name] = r
@@ -87,7 +87,7 @@ def lines_for(product, data=None, top=TOP):
     """알림 메시지에 붙일 줄들. 가져오지 못했으면 빈 목록(알림 자체는 그대로 나간다)."""
     r = (data or load()).get("items", {}).get(product)
     if not r or not r.get("ok"): return []
-    out = [f"• 판매처 최저가 (에누리 기준 · 배송비 포함 순 · {r.get('title', '')[:30]}):"]
+    out = [f"• 판매처 최저가 (에누리 기준 · 배송비 포함 순 · {r.get('title', '')[:50]}):"]
     seen, rank = set(), 0
     cards = [s for s in r["sellers"] if s.get("card")]
     for s in r["sellers"]:                       # 같은 판매처가 여러 항목이면 총액이 가장 낮은 것 하나만 보여 준다
