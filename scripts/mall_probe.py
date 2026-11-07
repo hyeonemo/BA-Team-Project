@@ -8,7 +8,7 @@ import os, re, time, urllib.parse, urllib.error
 from concurrent.futures import ThreadPoolExecutor
 import price_probe as pp
 import gemini_probe as gp
-
+ 
 MALLS = {  # 표시 이름: 주소에 들어 있어야 하는 말
     "올리브영": "oliveyoung.co.kr", "쿠팡": "coupang.com", "네이버 스마트스토어": "smartstore.naver.com",
     "네이버 브랜드스토어": "brand.naver.com", "11번가": "11st.co.kr", "G마켓": "gmarket.co.kr", "옥션": "auction.co.kr",
@@ -18,9 +18,9 @@ MALLS = {  # 표시 이름: 주소에 들어 있어야 하는 말
 PRODUCT = os.environ.get("PROBE_QUERY", "에스트라 에이시카365 리페어 크림 60ml").strip()
 MUST = [w for w in os.environ.get("PROBE_MUST", "리페어,크림").split(",") if w]
 VOL = os.environ.get("PROBE_VOL", "60").strip()
-PER_MALL = int(os.environ.get("PROBE_PER_MALL", "5"))
+PER_MALL = int(os.environ.get("PROBE_PER_MALL", "3"))
 BAD = ("세트", "기획", "증정", "듀오", "트리플", "+", "리필", "미니", "샘플")
-
+ 
 def collect():
     found = {}
     for mall, dom in MALLS.items():
@@ -38,11 +38,12 @@ def collect():
         keep.sort(key=lambda it: not all(w in pp.strip_tags(it['title']).replace(' ', '') for w in MUST))
         found[mall] = keep[:PER_MALL]
     return found
-
+ 
 def read(mall, it):
     url = it["link"]; o, op = gp.ours(url); title = pp.strip_tags(it["title"])[:40]
     row = {"mall": mall, "title": title, "ours": o, "url": url, "name": "", "vol": "", "price": None, "check": "-", "src": "-"}
-    if op: row.update(price=op, src="우리 코드", check="페이지 직접 읽음")
+    if op: row.update(price=op, src="우리 코드", check="페이지 직접 읽음"); return row     # 우리 코드가 읽었으면 Gemini 불필요
+    if o.startswith("robots"): row["check"] = "robots 금지 → 읽지 않음"; return row           # 사이트가 막아 둔 곳은 우회하지 않는다
     try:
         d, st = gp.gemini(url)
         row["name"] = str(d.get("product_name") or ""); row["vol"] = str(d.get("volume") or "")
@@ -51,13 +52,18 @@ def read(mall, it):
             ok = str(int(float(price))) in re.sub(r"[,\s]", "", quote)
             if not row["price"]: row.update(price=float(price), src="Gemini", check="원문 일치" if ok else "원문 불일치⚠")
             elif abs(float(price) - row["price"]) > 1: row["check"] = "우리 코드와 Gemini 가격 다름⚠"
-    except Exception as e: row["check"] = f"Gemini 실패({type(e).__name__})"
+    except Exception as e: row["check"] = "Gemini 못 읽음(붐빔·시간 한도)" if isinstance(e, RuntimeError) else f"Gemini 실패({type(e).__name__})"
     return row
-
+ 
+def pack(r):
+    t = (r["name"] or "") + " " + r["title"]
+    return max([int(x) for x in re.findall(r"(\d+)\s*(?:개|팩|세트)", t)] or [1])
+ 
 def same(r):
+    if pack(r) > 1: return False                              # 2개·3개·5개 묶음은 단가가 달라 제외
     n = (r["name"] or r["title"]).replace(" ", "")
     return all(w in n for w in MUST) and VOL in (r["vol"] + r["title"] + r["name"]).replace(" ", "") and not any(b in (r["name"] or r["title"]) for b in BAD)
-
+ 
 def main():
     found = collect(); jobs = [(m, it) for m, its in found.items() for it in its]
     with ThreadPoolExecutor(3) as ex: rows = list(ex.map(lambda a: read(*a), jobs))
@@ -66,13 +72,14 @@ def main():
     out += ["", "### 2. 읽은 결과", "", "| 판매몰 | 상품명(페이지) | 용량 | 가격 | 출처 | 검증 | 같은 제품 | 우리 접속 |", "|---|---|---|---|---|---|---|---|"]
     for r in rows:
         out.append(f"| {r['mall']} | {(r['name'] or r['title'])[:34]} | {r['vol']} | {'%d원' % r['price'] if r['price'] else '-'} | {r['src']} | {r['check']} | {'✅' if same(r) and r['price'] else '-'} | {r['ours']} |")
-    ok = sorted([r for r in rows if same(r) and r["price"] and "⚠" not in r["check"] and "실패" not in r["check"]], key=lambda r: r["price"])
+    ok = sorted([r for r in rows if same(r) and r["price"] and "⚠" not in r["check"]], key=lambda r: r["price"])
     best = {}
     for r in ok: best.setdefault(r["mall"], r)
     out += ["", f"### 3. 같은 제품·용량({VOL}) 최저가 순위 (몰별 1개)", "", "| 순위 | 판매몰 | 가격 | 링크 |", "|---|---|---|---|"]
-    out += [f"| {i} | {r['mall']} | {r['price']:,.0f}원 | {r['url']} |" for i, r in enumerate(sorted(best.values(), key=lambda r: r["price"]), 1)]
+    AGG = ("다나와", "에누리")
+    out += [f"| {i} | {r['mall']}{' (가격비교 사이트: 여러 판매처 중 최저가)' if r['mall'] in AGG else ''} | {r['price']:,.0f}원 | {r['url']} |" for i, r in enumerate(sorted(best.values(), key=lambda r: r["price"]), 1)]
     out += ["", f"**가격이 확인된 몰: {len(best)}곳 / 시험한 몰 {len(MALLS)}곳 (최종 모델 `{gp.MODEL}`)**"]
     text = "\n".join(out); print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write(text + "\n")
-
+ 
 if __name__ == "__main__": main()
