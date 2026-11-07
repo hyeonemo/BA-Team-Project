@@ -33,9 +33,9 @@ def pick(names):
         m = re.search(r"gemini-(\d+(?:\.\d+)?)", n); return (float(m.group(1)) if m else 0, "preview" not in n, "exp" not in n, n)
     return sorted(c, key=ver, reverse=True)
  
-def _call(url):
+def _call(url, prompt=None):
     key = os.environ["GEMINI_API_KEY"].strip()
-    body = {"contents": [{"parts": [{"text": PROMPT + url}]}], "tools": [{"url_context": {}}], "generationConfig": {"temperature": 0}}
+    body = {"contents": [{"parts": [{"text": (prompt or PROMPT) + url}]}], "tools": [{"url_context": {}}], "generationConfig": {"temperature": 0}}
     req = urllib.request.Request(f"https://generativelanguage.googleapis.com/v1beta/models/{MODEL}:generateContent",
                                  data=json.dumps(body).encode(), headers={"Content-Type": "application/json", "x-goog-api-key": key})
     r = json.load(urllib.request.urlopen(req, timeout=45))
@@ -47,17 +47,27 @@ def _call(url):
     data = json.loads(m.group(0)) if m else {}
     return data, status
  
+import threading
+_lock = threading.Lock(); _lastcall = [0.0]
+GAP = float(os.environ.get("PROBE_GAP", "12"))
+def _pace():
+    with _lock:
+        w = GAP - (time.time() - _lastcall[0])
+        if w > 0: time.sleep(w)
+        _lastcall[0] = time.time()
+ 
 NOTES = []
 _cands, _ci = [], 0
-def gemini(url):
+def gemini(url, prompt=None):
     """404(모델 없음)이면 쓸 수 있는 모델을 골라 바꾸고, 503·429·시간초과(붐빔)이면 기다렸다 재시도, 계속 안 되면 다음 모델로 넘어간다."""
     global MODEL, _tried, _cands, _ci
-    fails = 0; t1 = time.time()
+    fails = 0; t1 = time.time(); last = ""
     for attempt in range(8):
         if time.time() - t1 > PER or time.time() - T0 > TOTAL:
-            raise RuntimeError('붐벼서 못 읽음(시간 한도)')
+            raise RuntimeError('시간 한도·마지막 오류 ' + (last or '없음'))
+        _pace()
         try:
-            return _call(url)
+            return _call(url, prompt)
         except urllib.error.HTTPError as e:
             if e.code == 404 and not _tried:
                 _tried = True; names = list_models(); _cands = pick(names)
@@ -66,7 +76,7 @@ def gemini(url):
                 if not _cands: raise
                 MODEL = _cands[0]; continue
             if e.code in (429, 500, 503):
-                fails += 1
+                last = f'HTTP {e.code}'; fails += 1
                 if fails >= 3 and _cands and _ci + 1 < len(_cands):
                     _ci += 1; MODEL = _cands[_ci]; fails = 0
                     NOTES.append(f"붐벼서 다음 모델로 변경: `{MODEL}`")
@@ -74,8 +84,8 @@ def gemini(url):
                 continue
             raise
         except (TimeoutError, OSError) as e:
-            fails += 1; time.sleep(min(15, 5 * 2 ** (fails - 1))); continue
-    raise RuntimeError("재시도 초과(서버 붐빔)")
+            last = type(e).__name__; fails += 1; time.sleep(min(15, 5 * 2 ** (fails - 1))); continue
+    raise RuntimeError('재시도 초과·마지막 오류 ' + (last or '없음'))
  
 def ours(url):
     try:
