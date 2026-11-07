@@ -17,7 +17,7 @@ on:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 18
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,6 +32,6 @@ jobs:
           PROBE_MUST: ${{ inputs.must }}
           PROBE_VOL: ${{ inputs.vol }}
           GEMINI_MODEL: ${{ inputs.model }}
-          PROBE_TOTAL_SEC: "780"
-          PROBE_PER_MALL: "5"
+          PROBE_TOTAL_SEC: "420"
+          PROBE_PER_MALL: "3"
           PROBE_PER_SEC: "60"
