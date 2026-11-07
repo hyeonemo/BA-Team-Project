@@ -1,26 +1,37 @@
-name: gemini-probe
+name: mall-probe
 on:
   workflow_dispatch:
     inputs:
       query:
-        description: "검색어(제품명)"
-        default: "에스트라 에이시카365"
+        description: "제품명(용량까지)"
+        default: "에스트라 에이시카365 리페어 크림 60ml"
+      must:
+        description: "상품명에 꼭 있어야 하는 말(쉼표로)"
+        default: "리페어,크림"
+      vol:
+        description: "용량 숫자(ml)"
+        default: "60"
       model:
         description: "모델 이름"
         default: "gemini-3.5-flash"
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - run: python scripts/gemini_probe.py
+      - run: python scripts/mall_probe.py
         env:
           NAVER_CLIENT_ID: ${{ secrets.NAVER_CLIENT_ID }}
           NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PROBE_QUERY: ${{ inputs.query }}
+          PROBE_MUST: ${{ inputs.must }}
+          PROBE_VOL: ${{ inputs.vol }}
           GEMINI_MODEL: ${{ inputs.model }}
+          PROBE_TOTAL_SEC: "780"
+          PROBE_PER_MALL: "5"
+          PROBE_PER_SEC: "60"
