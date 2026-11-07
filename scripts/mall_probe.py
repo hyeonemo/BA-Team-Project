@@ -16,7 +16,7 @@ MALLS = {  # 표시 이름: 주소에 들어 있어야 하는 말
     "카카오 선물하기": "gift.kakao.com", "공식몰": "aestura.com",
 }
 PRODUCT = os.environ.get("PROBE_QUERY", "에스트라 에이시카365 리페어 크림 60ml").strip()
-MUST = [w for w in os.environ.get("PROBE_MUST", "리페어,크림").split(",") if w]
+MUST = [w for w in os.environ.get("PROBE_MUST", "에이시카,리페어,크림").split(",") if w]
 VOL = os.environ.get("PROBE_VOL", "60").strip()
 PER_MALL = int(os.environ.get("PROBE_PER_MALL", "3"))
 BAD = ("세트", "기획", "증정", "듀오", "트리플", "+", "리필", "미니", "샘플")
@@ -43,6 +43,8 @@ def read(mall, it):
     url = it["link"]; o, op = gp.ours(url); title = pp.strip_tags(it["title"])[:40]
     row = {"mall": mall, "title": title, "ours": o, "url": url, "name": "", "vol": "", "price": None, "check": "-", "src": "-"}
     if op: row.update(price=op, src="우리 코드", check="페이지 직접 읽음"); return row     # 우리 코드가 읽었으면 Gemini 불필요
+    if not all(w in pp.strip_tags(it["title"]).replace(" ", "") for w in MUST):
+        row["check"] = "제목이 다른 제품 → 읽지 않음"; return row
     if o.startswith("robots"): row["check"] = "robots 금지 → 읽지 않음"; return row           # 사이트가 막아 둔 곳은 우회하지 않는다
     try:
         d, st = gp.gemini(url)
@@ -52,7 +54,7 @@ def read(mall, it):
             ok = str(int(float(price))) in re.sub(r"[,\s]", "", quote)
             if not row["price"]: row.update(price=float(price), src="Gemini", check="원문 일치" if ok else "원문 불일치⚠")
             elif abs(float(price) - row["price"]) > 1: row["check"] = "우리 코드와 Gemini 가격 다름⚠"
-    except Exception as e: row["check"] = "Gemini 못 읽음(붐빔·시간 한도)" if isinstance(e, RuntimeError) else f"Gemini 실패({type(e).__name__})"
+    except Exception as e: row["check"] = f"Gemini 못 읽음({e})" if isinstance(e, RuntimeError) else f"Gemini 실패({type(e).__name__})"
     return row
  
 def pack(r):
@@ -62,11 +64,29 @@ def pack(r):
 def same(r):
     if pack(r) > 1: return False                              # 2개·3개·5개 묶음은 단가가 달라 제외
     n = (r["name"] or r["title"]).replace(" ", "")
-    return all(w in n for w in MUST) and VOL in (r["vol"] + r["title"] + r["name"]).replace(" ", "") and not any(b in (r["name"] or r["title"]) for b in BAD)
+    vt = (r["vol"] + r["title"] + r["name"]).replace(" ", "")
+    vol_ok = VOL in vt or (r["src"] == "우리 코드" and not re.search(r"\d+\s*ml", vt, re.I))   # 용량 표기가 아예 없으면 우리 코드가 읽은 것만 허용(표에 표시)
+    return all(w in n for w in MUST) and vol_ok and not any(b in (r["name"] or r["title"]) for b in BAD)
+ 
+SELLER_PROMPT = """아래 가격비교 페이지에서 판매처(쇼핑몰)별 가격 목록을 읽어 JSON 한 개만 출력하세요(설명 금지).
+{"sellers": [{"mall": "쇼핑몰 이름", "price_krw": 숫자, "shipping": "배송비 문구 또는 null", "quote": "페이지에 적힌 가격 문구 원문 그대로"}]}
+규칙: 페이지에 보이는 판매처만, 낮은 가격 순으로 최대 10개. 페이지에 없으면 빈 목록. 추측·계산 금지. 용량·구성이 다른 상품 줄은 넣지 마세요.
+URL: """
+ 
+def sellers(url):
+    import json
+    d, st = gp.gemini(url, SELLER_PROMPT)
+    out = []
+    for x in (d.get("sellers") or [])[:10]:
+        try:
+            p = int(float(x.get("price_krw"))); ok = str(p) in re.sub(r"[,\s]", "", x.get("quote") or "")
+            out.append((str(x.get("mall")), p, str(x.get("shipping") or "-"), "원문 일치" if ok else "원문 불일치⚠"))
+        except Exception: pass
+    return out
  
 def main():
     found = collect(); jobs = [(m, it) for m, its in found.items() for it in its]
-    with ThreadPoolExecutor(3) as ex: rows = list(ex.map(lambda a: read(*a), jobs))
+    with ThreadPoolExecutor(1) as ex: rows = list(ex.map(lambda a: read(*a), jobs))
     out = [f"## 판매몰별 가격 시험: {PRODUCT}", "", "### 1. 몰별 검색 노출", "", "| 판매몰 | 검색에 나온 페이지 수 |", "|---|---|"]
     out += [f"| {m} | {len(its)} |" for m, its in found.items()]
     out += ["", "### 2. 읽은 결과", "", "| 판매몰 | 상품명(페이지) | 용량 | 가격 | 출처 | 검증 | 같은 제품 | 우리 접속 |", "|---|---|---|---|---|---|---|---|"]
@@ -77,7 +97,16 @@ def main():
     for r in ok: best.setdefault(r["mall"], r)
     out += ["", f"### 3. 같은 제품·용량({VOL}) 최저가 순위 (몰별 1개)", "", "| 순위 | 판매몰 | 가격 | 링크 |", "|---|---|---|---|"]
     AGG = ("다나와", "에누리")
-    out += [f"| {i} | {r['mall']}{' (가격비교 사이트: 여러 판매처 중 최저가)' if r['mall'] in AGG else ''} | {r['price']:,.0f}원 | {r['url']} |" for i, r in enumerate(sorted(best.values(), key=lambda r: r["price"]), 1)]
+    out += [f"| {i} | {r['mall']}{' (가격비교 사이트: 여러 판매처 중 최저가)' if r['mall'] in AGG else ''} | {r['price']:,.0f}원{'' if VOL in (r['vol'] + r['title'] + r['name']).replace(' ', '') else ' (용량 표기 없음)'} | {r['url']} |" for i, r in enumerate(sorted(best.values(), key=lambda r: r["price"]), 1)]
+    for agg in ("다나와", "에누리"):
+        u = next((r["url"] for r in rows if r["mall"] == agg and same(r) and r["price"]), None)
+        if not u: continue
+        out += ["", f"### 4. {agg} 페이지의 판매처별 가격 (Gemini가 읽음, 참고용)", "", u, ""]
+        try:
+            sl = sellers(u)
+            out += ["| 판매처 | 가격 | 배송 | 검증 |", "|---|---|---|---|"] + [f"| {m} | {p:,}원 | {sh} | {ck} |" for m, p, sh, ck in sl]
+            if not sl: out.append("(읽은 판매처 없음)")
+        except Exception as e: out.append(f"(못 읽음: {e})")
     out += ["", f"**가격이 확인된 몰: {len(best)}곳 / 시험한 몰 {len(MALLS)}곳 (최종 모델 `{gp.MODEL}`)**"]
     text = "\n".join(out); print(text)
     if os.environ.get("GITHUB_STEP_SUMMARY"): open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8").write(text + "\n")
