@@ -1,0 +1,445 @@
+{
+ "asof": "2026-11-08",
+ "items": {
+  "아토베리어365 크림": {
+   "ok": true,
+   "url": "https://price.enuri.com/catalog/120095764",
+   "title": "에스트라 2세대 아토베리어 365 크림 80ml [1개]",
+   "page_cut": false,
+   "n_sellers": 10,
+   "sellers": [
+    {
+     "shop": "옥션",
+     "price": 18260,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 20760,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "G마켓",
+     "price": 17800,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 20800,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":true, \"quickDeliveryText \": \"평일 15:00까지 주문 시 \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.e"
+    },
+    {
+     "shop": "롯데ON",
+     "price": 18420,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 21420,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "롯데ON",
+     "price": 18600,
+     "ship_text": "2,900원",
+     "ship": 2900,
+     "total": 21500,
+     "ship_known": true,
+     "card": "롯데카드",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"cardPrice \":18600}, \"bridg"
+    },
+    {
+     "shop": "11번가",
+     "price": 19940,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 22440,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "이마트몰",
+     "price": 22520,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 22520,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "신세계몰",
+     "price": 22520,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 22520,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "브랜드부니",
+     "price": 18730,
+     "ship_text": "4,500원",
+     "ship": 4500,
+     "total": 23230,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"isNaverPayPlus \":true, \"benefitPriceInfo \":{ \"benefitNameText \": \""
+    },
+    {
+     "shop": "SSG.COM",
+     "price": 21297,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 24297,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "신세계라이브쇼핑",
+     "price": 22280,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 24780,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    }
+   ],
+   "check": "최저 판매가가 페이지가 밝힌 최저가와 일치"
+  },
+  "에이시카365": {
+   "ok": true,
+   "url": "https://price.enuri.com/catalog/136695232",
+   "title": "에스트라 에이시카365 리페어 크림 pH4.5 60ml [1개]",
+   "page_cut": false,
+   "n_sellers": 10,
+   "sellers": [
+    {
+     "shop": "롯데ON",
+     "price": 19850,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 19850,
+     "ship_known": true,
+     "card": "롯데카드",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"cardPrice \":19850}, \"bridg"
+    },
+    {
+     "shop": "11번가",
+     "price": 20520,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 20520,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "G마켓",
+     "price": 18200,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 21200,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.enuri.com/move/"
+    },
+    {
+     "shop": "옥션",
+     "price": 18470,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 21470,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "패션플러스",
+     "price": 18900,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 21900,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "롯데ON",
+     "price": 19030,
+     "ship_text": "2,900원",
+     "ship": 2900,
+     "total": 21930,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "신세계라이브쇼핑",
+     "price": 20250,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 22750,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "SSG.COM",
+     "price": 21120,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 23620,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "이마트몰",
+     "price": 21120,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 23620,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "신세계몰",
+     "price": 21120,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 23620,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    }
+   ],
+   "check": "최저 판매가가 페이지가 밝힌 최저가와 일치"
+  },
+  "테라크네365": {
+   "ok": true,
+   "url": "https://price.enuri.com/catalog/101879068",
+   "title": "에스트라 테라크네365 수딩 액티브 모이스처라이저 60ml [1개]",
+   "page_cut": false,
+   "n_sellers": 10,
+   "sellers": [
+    {
+     "shop": "롯데ON",
+     "price": 21390,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 21390,
+     "ship_known": true,
+     "card": "롯데카드",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"cardLowest \", \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"ca"
+    },
+    {
+     "shop": "G마켓",
+     "price": 22280,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 22280,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "11번가",
+     "price": 23020,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 23020,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "CJ온스타일",
+     "price": 23520,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 23520,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "옥션",
+     "price": 21820,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 24820,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.enuri.com/move/"
+    },
+    {
+     "shop": "패션플러스",
+     "price": 22320,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 25320,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "이마트몰",
+     "price": 23232,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 25732,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "SSG.COM",
+     "price": 23232,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 25732,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "신세계몰",
+     "price": 23232,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 25732,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "롯데ON",
+     "price": 23310,
+     "ship_text": "3,000원",
+     "ship": 3000,
+     "total": 26310,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    }
+   ],
+   "check": "최저 판매가가 페이지가 밝힌 최저가와 일치"
+  },
+  "리제덤365(PDRN 캡슐크림)": {
+   "ok": true,
+   "url": "https://price.enuri.com/catalog/109986435",
+   "title": "에스트라 리제덤365 밀도탄력 캡슐크림 50ml [1개]",
+   "page_cut": false,
+   "n_sellers": 10,
+   "sellers": [
+    {
+     "shop": "롯데ON",
+     "price": 29160,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 29160,
+     "ship_known": true,
+     "card": "롯데카드",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"cardLowest \", \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"ca"
+    },
+    {
+     "shop": "신세계라이브쇼핑",
+     "price": 30380,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 30380,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.enuri.com/move/"
+    },
+    {
+     "shop": "11번가",
+     "price": 31260,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 31260,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "옥션",
+     "price": 32400,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 32400,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "롯데ON",
+     "price": 32400,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 32400,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "G마켓",
+     "price": 32400,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 32400,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "롯데홈쇼핑",
+     "price": 32760,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 32760,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "LF mall",
+     "price": 33480,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 33480,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "현대Hmall",
+     "price": 33750,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 33750,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "이마트몰",
+     "price": 35640,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 35640,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    }
+   ],
+   "check": "최저 판매가가 페이지가 밝힌 최저가와 일치"
+  }
+ }
+}
