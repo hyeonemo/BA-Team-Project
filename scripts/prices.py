@@ -87,19 +87,14 @@ def lines_for(product, data=None, top=TOP):
     """알림 메시지에 붙일 줄들. 가져오지 못했으면 빈 목록(알림 자체는 그대로 나간다)."""
     r = (data or load()).get("items", {}).get(product)
     if not r or not r.get("ok"): return []
-    out = [f"• 판매처 최저가 (에누리 기준 · 배송비 포함 순 · {r.get('title', '')[:50]}):"]
+    out = [f"• 판매처 최저가 (에누리 기준 · 배송비 포함 순 · 참고용):"]
     seen, rank = set(), 0
-    cards = [s for s in r["sellers"] if s.get("card")]
     for s in r["sellers"]:                       # 같은 판매처가 여러 항목이면 총액이 가장 낮은 것 하나만 보여 준다
         if s.get("card") or s["shop"] in seen: continue      # 특정 카드로 결제해야 되는 가격은 순위에서 빼고 아래에 따로 보여 준다
         seen.add(s["shop"]); rank += 1
         if rank > top: break
         sh = "무료배송" if s["ship"] == 0 else (f"배송비 {s['ship']:,}원" if s["ship"] else "배송비 확인 필요")
         out.append(f"   {rank}) {s['shop']} {s['price']:,}원 ({sh}" + (f" → 총 {s['total']:,}원)" if s["ship"] else ")") + "")
-    if cards:
-        c = min(cards, key=lambda x: x["total"]); sh = "무료배송" if c["ship"] == 0 else f"배송비 {c['ship']:,}원"
-        out.append(f"   ※ {c['card']} 결제 시 {c['shop']} {c['price']:,}원 ({sh}) — 카드 조건이라 순위에는 넣지 않음")
-    out.append(f"   출처·상세: {r['url']} (참고용 · 카드·쿠폰 조건에 따라 다를 수 있음)")
     return out
  
 if __name__ == "__main__":
