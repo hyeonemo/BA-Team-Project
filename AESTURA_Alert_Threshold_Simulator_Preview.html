@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#12304B">
+  <meta name="description" content="에스트라 원본 자동화 코드와 과거 검색 이력에 기반한 주당 알림 건수 시뮬레이터">
+  <title>알림 기준 시뮬레이터 | AESTURA</title>
+  
+  
+  
+<style>
+:root{--navy:#102f49;--navy-deep:#092033;--blue:#3479b7;--aqua:#79b7c6;--ink:#17314a;--muted:#697b89;--border:#e3eaf0;--canvas:#f5f8fb;--white:#fff}
+*{box-sizing:border-box}
+html{background:var(--canvas);scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font-family:Inter,Pretendard,'Noto Sans KR',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit}
+a{color:inherit;text-decoration:none}
+.site-shell{min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:min(1140px,calc(100% - 64px));margin-inline:auto}
+.topbar{height:76px;background:var(--navy-deep);color:var(--white)}
+.topbar-content{display:flex;align-items:center;justify-content:space-between;height:100%}
+.brand{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:.11em;font-size:17px}
+.brand-mark{width:34px;height:34px;display:grid;place-items:center;border:1.5px solid #a1bfcd;font-family:Georgia,serif;font-size:20px;letter-spacing:0;border-radius:3px}
+.brand-sub{font-weight:500;color:#aac0cf;font-size:11px;letter-spacing:.12em}
+.header-side{display:flex;align-items:center;gap:9px;color:#d1e0ec;letter-spacing:.13em;font-size:10px;font-weight:700}
+.online-dot{width:7px;height:7px;border-radius:50%;background:#8ad1b3;box-shadow:0 0 0 3px #83cdb021}
+main{flex:1;padding-top:47px;padding-bottom:60px}
+.eyebrow{display:flex;align-items:center;gap:13px;font-size:10px;letter-spacing:.17em;color:#4f718a;font-weight:800}
+.eyebrow-rule{width:27px;height:1px;background:#668da9}
+.intro{position:relative;display:flex;justify-content:space-between;align-items:center;padding-top:21px;padding-bottom:35px}
+.intro-copy{z-index:1;max-width:800px}
+.small-caps{margin:0;color:#647e94;letter-spacing:.17em;font-size:10px;font-weight:800}
+h1,h2,h3,p{margin-top:0}
+h1{margin:15px 0 16px;line-height:1.35;letter-spacing:-.053em;font-size:clamp(30px,4.1vw,49px);font-weight:800}
+h1 em{font-style:normal;color:#3479b7}
+.intro-copy>p{max-width:695px;margin-bottom:0;font-size:15px;line-height:1.85;color:#627586;word-break:keep-all}
+.intro-ornament{width:176px;height:170px;position:relative;display:grid;place-items:center;flex-shrink:0;color:#c7d8e6;margin-right:21px}
+.intro-ornament span{font-family:Georgia,serif;font-size:112px;line-height:1;z-index:2;color:#acc8da}
+.intro-ornament i,.intro-ornament b{position:absolute;width:135px;height:135px;border:1px solid #dee8ef;border-radius:50%;transform:rotate(-18deg) scaleX(1.18)}
+.intro-ornament b{width:181px;height:181px;border-color:#e4edf3;transform:rotate(28deg) scaleX(.9)}
+.simulation{display:grid;grid-template-columns:1.16fr .84fr;gap:20px;align-items:stretch}
+.card{border:1px solid var(--border);border-radius:14px;background:var(--white);box-shadow:0 5px 26px rgba(16,47,73,.035)}
+.threshold-card{padding:33px 36px 35px}
+.card-kicker{display:flex;align-items:center;gap:10px;font-size:10px;letter-spacing:.14em;font-weight:800;color:#72899a}
+.step-num{height:27px;min-width:27px;padding:0 6px;display:grid;place-items:center;color:#235276;background:#e8f1f7;border-radius:7px;font-size:12px;letter-spacing:0}
+.card h2{font-size:23px;letter-spacing:-.045em;margin:20px 0 12px;line-height:1.4}
+.card-description{color:#748593;font-size:13px;line-height:1.8;max-width:450px;margin-bottom:29px;word-break:keep-all}
+.slider-panel{background:#f5f9fc;border:1px solid #e9eff5;border-radius:12px;padding:24px 24px 25px}
+.slider-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;gap:12px}
+.slider-head label{font-size:14px;font-weight:750}
+.slider-head output{color:#206eab;font-size:32px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.05em;line-height:1}
+.slider-head output span{font-size:22px;margin-left:3px;font-weight:500;font-family:Georgia,serif}
+#threshold{width:100%;height:8px;margin:7px 0 13px;appearance:none;-webkit-appearance:none;background:linear-gradient(to right,#3385bb 0 var(--progress,25%),#d9e6ee var(--progress,25%) 100%);border-radius:99px;cursor:pointer;touch-action:pan-y}
+#threshold::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:23px;height:23px;border-radius:50%;background:#fff;border:6px solid #287fb3;box-shadow:0 2px 9px rgba(31,98,142,.25);cursor:grab}
+#threshold::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:#fff;border:6px solid #287fb3;box-shadow:0 2px 9px rgba(31,98,142,.25);cursor:grab}
+#threshold:focus-visible{outline:3px solid #75b3de;outline-offset:7px}
+.slider-ticks{display:flex;justify-content:space-between;margin:0 -4px;font-size:12px;color:#627d8f;font-variant-numeric:tabular-nums}
+.slider-endpoints{display:flex;justify-content:space-between;margin-top:17px;font-size:11px;color:#8c9ca9}
+.threshold-note{margin:23px 0 0;color:#6c8291;font-size:12px;line-height:1.7;word-break:keep-all}
+.threshold-note span{color:#3482ac;font-size:15px;margin-right:5px}
+.outcome-card{padding:33px 32px 30px;background:linear-gradient(153deg,#163e5c,#0d2a43 75%);border-color:#163e5c;color:#fff;position:relative;overflow:hidden}
+.outcome-card:before{content:'';position:absolute;right:-65px;top:-60px;width:230px;height:230px;border-radius:50%;border:1px solid rgba(183,215,229,.15);box-shadow:0 0 0 30px rgba(183,215,229,.025),0 0 0 65px rgba(183,215,229,.025);pointer-events:none}
+.result-kicker{color:#9dbed0}
+.result-kicker .step-num{background:#315671;color:#c2e6f3}
+.outcome-card h2{font-size:22px;margin-top:20px;color:#e1eef6}
+.result-display{display:flex;align-items:baseline;gap:13px;margin:26px 0 25px;min-height:90px;position:relative;z-index:1}
+.result-display strong{font-size:clamp(63px,6.2vw,89px);line-height:1;letter-spacing:-.06em;color:#fff;font-variant-numeric:tabular-nums}
+.result-display>span{font-size:17px;font-weight:600;color:#b9d8e6;white-space:nowrap}
+.separator{opacity:.45}
+.rule{height:1px;background:#ffffff24}
+.outcome-description{font-size:13px;line-height:1.9;color:#b5cbd9;margin:22px 0 26px;word-break:keep-all}
+.outcome-description strong{color:#fff;font-weight:750}
+.outcome-indicator{display:inline-flex;align-items:center;gap:8px;font-size:11px;color:#b6d5c4;background:#ffffff12;border:1px solid #ffffff18;padding:10px 13px;border-radius:7px}
+.indicator-dot{height:6px;width:6px;border-radius:50%;background:#83d8b5}
+.comparison{margin-top:20px;padding:29px 35px 31px}
+.comparison-heading{display:flex;align-items:end;justify-content:space-between;gap:12px;margin-bottom:28px}
+.comparison-heading h2{margin:10px 0 0;font-size:20px}
+.comparison-unit{font-size:11px;color:#93a1ad;white-space:nowrap}
+.comparison-bars{display:grid;gap:15px}
+.comparison-row{display:grid;grid-template-columns:68px 1fr 75px;align-items:center;gap:19px;cursor:pointer;padding:7px 9px;border-radius:7px;border:1px solid transparent;transition:background .2s,border-color .2s;user-select:none}
+.comparison-row:hover{background:#f7fafd}
+.comparison-row.current{background:#eef6fb;border-color:#dcebf5}
+.comparison-label{font-size:13px;font-weight:750;color:#6d8494;font-variant-numeric:tabular-nums}
+.comparison-row.current .comparison-label{color:#236993}
+.comparison-track{width:100%;height:10px;background:#eaf0f4;border-radius:99px;overflow:hidden}
+.comparison-fill{display:block;height:100%;background:#b3cad9;border-radius:99px;transition:width .28s ease}
+.comparison-row.current .comparison-fill{background:#2e80b5}
+.comparison-value{text-align:right;font-size:14px;font-weight:800;color:#5c7486;font-variant-numeric:tabular-nums}
+.comparison-row.current .comparison-value{color:#226d9f}
+.notice{display:flex;gap:12px;margin-top:22px;color:#7a8d9b;font-size:12px;line-height:1.8}
+.notice p{margin:0;word-break:keep-all}
+.notice-icon{display:grid;place-items:center;width:19px;height:19px;flex-shrink:0;border:1px solid #b2c3cf;border-radius:50%;color:#8ca2b3;font-weight:700;font-size:11px;margin-top:1px;font-style:normal}
+.footer{border-top:1px solid #e5ecf1;color:#9aabb6;font-size:10px;letter-spacing:.07em}
+.footer-inner{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:60px}
+@media (max-width:900px){.intro-ornament{width:130px;margin-right:0;opacity:.6}.simulation{grid-template-columns:1fr}.outcome-card{min-height:325px}.result-display strong{font-size:74px}}
+@media (max-width:620px){.wrap{width:calc(100% - 32px)}.topbar{height:64px}.brand{font-size:14px;gap:8px}.brand-mark{width:28px;height:28px;font-size:17px}.brand-sub{display:none}.header-side{font-size:9px;letter-spacing:.08em}main{padding-top:29px;padding-bottom:35px}.eyebrow{font-size:9px}.intro{padding-top:20px;padding-bottom:26px}.intro-copy{max-width:100%}.intro-ornament{display:none}.intro h1{font-size:31px;margin:12px 0;line-height:1.38}.intro-copy>p{font-size:13px;line-height:1.8}.threshold-card{padding:25px 21px 27px}.card h2{font-size:21px;margin-top:17px}.card-description{margin-bottom:22px}.slider-panel{padding:22px 18px}.slider-head output{font-size:29px}.slider-ticks{font-size:11px}.threshold-note{margin-top:19px}.outcome-card{padding:26px 22px;min-height:310px}.result-display strong{font-size:72px}.comparison{padding:25px 16px}.comparison-heading{margin-bottom:24px}.comparison-heading h2{font-size:19px}.comparison-row{grid-template-columns:54px 1fr 62px;gap:9px;padding:8px 6px}.comparison-value{font-size:13px}.notice{font-size:11px}.footer-inner{flex-direction:column;align-items:flex-start;gap:5px;justify-content:center;padding-block:16px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+</style>
+</head>
+<body>
+  <div class="site-shell">
+    <header class="topbar">
+      <div class="wrap topbar-content">
+        <a href="./" class="brand" aria-label="AESTURA 알림 시뮬레이터 홈">
+          <span class="brand-mark" aria-hidden="true">A</span>
+          <span class="brand-word">AESTURA<span class="brand-sub"> / OPERATIONS</span></span>
+        </a>
+        <div class="header-side"><span class="online-dot" aria-hidden="true"></span><span>INITIAL SETUP TOOL</span></div>
+      </div>
+    </header>
+
+    <main class="wrap">
+      <div class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span> AUTO ALERT · THRESHOLD SIMULATION</div>
+      <section class="intro" aria-labelledby="page-title">
+        <div class="intro-copy">
+          <div class="small-caps">AESTURA ALERT SETUP / 01</div>
+          <h1 id="page-title">알림 기준을 정하기 전,<br><em>발송 빈도를 확인하세요.</em></h1>
+          <p>에스트라의 기존 검색 데이터와 실제 자동화 계산 로직을 기준으로, 표준편차 설정에 따른 주당 평균 알림 건수를 확인할 수 있습니다.</p>
+        </div>
+        <div class="intro-ornament" aria-hidden="true"><span>σ</span><i></i><b></b></div>
+      </section>
+
+      <section class="simulation" aria-label="알림 기준 설정 및 결과">
+        <div class="card threshold-card">
+          <div class="card-kicker"><span class="step-num">01</span> SELECT THRESHOLD</div>
+          <h2>알림 민감도 설정</h2>
+          <p class="card-description">기준이 낮을수록 작은 검색량 변화도 포착합니다. 기준을 높이면 더 큰 변화가 있을 때 알림을 보냅니다.</p>
+          <div class="slider-panel">
+            <div class="slider-head">
+              <label for="threshold">표준편차 기준</label>
+              <output for="threshold" id="threshold-output">1.0<span>σ</span></output>
+            </div>
+            <input id="threshold" type="range" min="0.5" max="2.5" step="0.5" value="1.0" aria-label="알림 표준편차 기준" aria-valuetext="1.0 표준편차">
+            <div class="slider-ticks" aria-hidden="true"><span>0.5</span><span>1.0</span><span>1.5</span><span>2.0</span><span>2.5</span></div>
+            <div class="slider-endpoints"><span>더 민감한 알림</span><span>더 엄격한 알림</span></div>
+          </div>
+          <p class="threshold-note"><span aria-hidden="true">ⓘ</span> 슬라이더는 0.5σ 단위로 이동하며, 선택 즉시 과거 이력의 발송 횟수가 반영됩니다.</p>
+        </div>
+        <div class="card outcome-card">
+          <div class="card-kicker result-kicker"><span class="step-num">02</span> SIMULATION RESULT</div>
+          <h2>주당 평균 알림 건수</h2>
+          <div class="result-display" role="status" aria-live="polite" aria-atomic="true"><strong id="average">—</strong><span>건 <span class="separator">/</span> 주</span></div>
+          <div class="rule"></div>
+          <p class="outcome-description">현재 선택한 <strong id="selected-label">1.0σ</strong> 기준을 과거 데이터에 적용했을 때 발생했을 제품 관련 알림의 주간 평균입니다.</p>
+          <div class="outcome-indicator"><span class="indicator-dot"></span> 실제 운영 코드 기반 이력 재현</div>
+        </div>
+      </section>
+
+      <section class="comparison card" aria-labelledby="comparison-title">
+        <div class="comparison-heading">
+          <div>
+            <p class="small-caps">THRESHOLD COMPARISON</p>
+            <h2 id="comparison-title">표준편차별 알림 빈도</h2>
+          </div>
+          <span class="comparison-unit">단위: 건 / 주</span>
+        </div>
+        <div id="comparison-bars" class="comparison-bars" aria-label="표준편차 기준별 주당 평균 알림 건수"></div>
+      </section>
+
+      <aside class="notice" aria-label="시뮬레이션 집계 기준">
+        <span class="notice-icon" aria-hidden="true">i</span>
+        <p>기존 에스트라 코드의 제품 총점수, 자체 검색, 14일 사건 묶음 및 신규·진행·종료 알림 조건을 반영했습니다. ‘오늘의 알림 없음’ 메시지와 별도 주간 브리핑은 집계하지 않습니다. 과거 이력으로 재현한 값이며 향후 발송 횟수를 보장하지는 않습니다.</p>
+      </aside>
+    </main>
+
+    <footer class="footer"><div class="wrap footer-inner"><span>AESTURA / ALERT THRESHOLD SETUP</span><span>기존 자동화 시스템과 별도로 제공되는 초기 설정 시뮬레이터</span></div></footer>
+  </div>
+<script>
+/* Generated from the original AESTURA Python pipeline. Do not edit manually. */
+window.AESTURA_SIM_DATA = Object.freeze({"averages":{"0.5":9.9239,"1.0":5.3261,"1.5":2.6522,"2.0":1.1739,"2.5":0.6957},"sourceLastDate":"2026-11-09","analysisStart":"2025-02-03","analysisEnd":"2026-11-08","completeWeeks":92,"totals":{"0.5":913,"1.0":490,"1.5":244,"2.0":108,"2.5":64},"productModes":{"아토베리어365 크림":"score","에이시카365":"score","테라크네365":"own","리제덤365(PDRN 캡슐크림)":"own"},"included":"daily product alert messages (new, increase, sustained, decrease, end)","excluded":"no-alert daily notices, weekly digest, API failures/retries","sourceSha256":{"config.json":"03a180ede865","search_daily.csv":"1c4583b698e5","compute.py":"ca15c97d0371","notify.py":"c0f1f927a7cb"}});
+
+</script>
+<script>
+(() => {
+  'use strict';
+  const DATA = window.AESTURA_SIM_DATA;
+  const STEPS = [0.5, 1.0, 1.5, 2.0, 2.5];
+  const range = document.getElementById('threshold');
+  const output = document.getElementById('threshold-output');
+  const average = document.getElementById('average');
+  const selectedLabel = document.getElementById('selected-label');
+  const compare = document.getElementById('comparison-bars');
+
+  if (!DATA || !DATA.averages || !STEPS.every(t => Number.isFinite(DATA.averages[t.toFixed(1)]))) {
+    average.textContent = '—';
+    const notice = document.createElement('p');
+    notice.setAttribute('role', 'alert');
+    notice.textContent = '과거 분석 결과가 연결되지 않았습니다. README의 재계산 방법을 확인해 주세요.';
+    compare.append(notice);
+    range.disabled = true;
+    return;
+  }
+
+  const max = Math.max(...Object.values(DATA.averages).map(Number));
+  const elements = new Map();
+  const format = value => Number(value).toFixed(2);
+
+  for (const threshold of STEPS) {
+    const key = threshold.toFixed(1);
+    const row = document.createElement('div');
+    row.className = 'comparison-row';
+    row.setAttribute('data-threshold', key);
+    row.setAttribute('aria-label', `${key} 표준편차 기준 주당 평균 알림 ${format(DATA.averages[key])}건`);
+    row.innerHTML = `<span class="comparison-label">${key}σ</span><span class="comparison-track"><span class="comparison-fill" style="width:${max === 0 ? 0 : 100 * DATA.averages[key] / max}%"></span></span><span class="comparison-value">${format(DATA.averages[key])}</span>`;
+    row.addEventListener('click', () => {
+      range.value = key;
+      render();
+    });
+    compare.append(row);
+    elements.set(key, row);
+  }
+
+  function render() {
+    const value = Number(range.value);
+    const key = value.toFixed(1);
+    output.innerHTML = `${key}<span>σ</span>`;
+    average.textContent = format(DATA.averages[key]);
+    selectedLabel.textContent = `${key}σ`;
+    range.style.setProperty('--progress', `${((value - 0.5) / 2) * 100}%`);
+    range.setAttribute('aria-valuetext', `${key} 표준편차`);
+    for (const [rowKey, row] of elements.entries()) {
+      row.classList.toggle('current', rowKey === key);
+      if (rowKey === key) row.setAttribute('aria-current', 'true');
+      else row.removeAttribute('aria-current');
+    }
+  }
+  range.addEventListener('input', render);
+  range.addEventListener('change', render);
+  render();
+})();
+
+</script>
+</body>
+</html>
