@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-10",
+ "asof": "2026-11-11",
  "items": {
   "아토베리어365 크림": {
    "ok": true,
@@ -100,10 +100,10 @@
     },
     {
      "shop": "SSG.COM",
-     "price": 21297,
+     "price": 21755,
      "ship_text": "3,000원",
      "ship": 3000,
-     "total": 24297,
+     "total": 24755,
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
@@ -199,17 +199,17 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "SSG.COM",
-     "price": 22320,
+     "shop": "CJ온스타일",
+     "price": 22800,
      "ship_text": "2,500원",
      "ship": 2500,
-     "total": 24820,
+     "total": 25300,
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "CJ온스타일",
+     "shop": "SSG.COM",
      "price": 22800,
      "ship_text": "2,500원",
      "ship": 2500,
@@ -299,16 +299,6 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "SSG.COM",
-     "price": 24552,
-     "ship_text": "2,500원",
-     "ship": 2500,
-     "total": 27052,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
      "shop": "써니플로우",
      "price": 24470,
      "ship_text": "3,000원",
@@ -317,6 +307,16 @@
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"isNaverPayPlus \":true, \"benefitPriceInfo \":{ \"benefitNameText \": \""
+    },
+    {
+     "shop": "SSG.COM",
+     "price": 25080,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 27580,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
      "shop": "하프클럽",
@@ -409,16 +409,6 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "LF mall",
-     "price": 33480,
-     "ship_text": "무료배송",
-     "ship": 0,
-     "total": 33480,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
      "shop": "현대Hmall",
      "price": 33750,
      "ship_text": "무료배송",
@@ -430,6 +420,16 @@
     },
     {
      "shop": "GS SHOP",
+     "price": 36000,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 36000,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "LF mall",
      "price": 36000,
      "ship_text": "무료배송",
      "ship": 0,
