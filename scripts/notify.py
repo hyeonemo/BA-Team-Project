@@ -16,6 +16,16 @@ def price_lines(p):
     try: return prices.lines_for(p) if prices else []
     except Exception: return []
  
+def comp_lines(r):
+    """경쟁 제품 검색 변화 줄. 이력이 짧아 비교 못 하는 제품은 '비교 불가'로 표시한다."""
+    c = r.get("competitors") or {}
+    if not c.get("items") or c.get("median_z") is None: return []
+    out = [f"• 경쟁 제품 ({c['label']} · 최근 7일 vs 직전 4주):"]
+    for i in c["items"]:
+        out.append(f"   {i['name']} {i['pct']:+d}% (평소 폭 {i['z']:+.1f}배)" if i["z"] is not None and i["pct"] is not None else f"   {i['name']} 비교 불가 (검색 이력 짧음)")
+    out.append(f"   → 경쟁 중앙값 {c['median_z']:+.1f}배 · 우리 {c['our_z']:+.1f}배: {c['verdict']}" + (f" ({', '.join(c['hot'])} 급등 중)" if c.get("hot") else ""))
+    return out
+ 
 def _md(s): return f"{int(s[5:7])}/{int(s[8:10])}"
  
 def progress_text(res, p, r, ev, refline):
@@ -30,6 +40,7 @@ def progress_text(res, p, r, ev, refline):
     elif ev["phase"] == "완화": l1, l2 = f"• 평소 폭의 *{now:.1f}배*로 내려오는 중 ({chg})", f"• 판단: 정점에서 꺾였지만 기준({thr:.1f}배)보다는 높다 ({pct})"
     else: l1, l2 = f"• 기준({thr:.1f}배) 아래로 내려왔다 ({chg})", f"• 이번 급등: 정점 {peak:.1f}배({_md(ev['peak_day'])}), 시작부터 {ev['day_n']}일"
     lines = [head, l1, l2, f"• 참고: {refline} · 시장 공통 변화 {res['market_common_z']:+.1f}"]
+    lines += comp_lines(r)
     if ev["phase"] != "종료": lines += price_lines(p)
     if PAGE_URL: lines.append(f"• 자세히: {PAGE_URL}")
     return "\n".join(lines)
@@ -54,6 +65,7 @@ def daily_messages(res):
             lines = [head, f"• 제품 자체 검색이 평소 폭의 *{r['ratio']:.1f}배* 올랐다 (기준 {res['threshold']:.1f}배)",
                      "• 연결 키워드 없음: 성분·카테고리 연결이 우연 수준이라 제품 자체 검색만 감지한다"]
         lines.append(f"• 참고: {refline} · 시장 공통 변화 {res['market_common_z']:+.1f}")
+        lines += comp_lines(r)
         lines += price_lines(p)
         if PAGE_URL: lines.append(f"• 자세히: {PAGE_URL}")
         msgs.append((f"{res['asof']}|{p}|{st}", "\n".join(lines)))
