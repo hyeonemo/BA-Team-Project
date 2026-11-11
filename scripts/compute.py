@@ -67,6 +67,24 @@ def phase_info(ratio, ev, day, thr, merge_days):
     return {"start": str(s.date()), "day_n": (day - s).days + 1, "peak": round(peak, 2), "peak_day": str(seg.idxmax().date()),
             "prev": round(prev, 2) if prev is not None else None, "phase": ph}
  
+def competitor_info(p, cc, Z, pct, prod, thr):
+    """경쟁 제품 검색 변화: 우리 알림과 같은 계산(최근 7일 vs 직전 28일 → 365일 기준 z). 이력이 짧아 z 를 못 구하면 z=None."""
+    items = []
+    for n in cc["names"]:
+        if n not in Z.columns: continue
+        z = Z[n].iloc[-1]; q = pct[n].iloc[-1]
+        items.append({"name": n, "z": None if np.isnan(z) else round(float(z), 2), "pct": None if np.isnan(q) else round(float(q) * 100)})
+    zs = [i["z"] for i in items if i["z"] is not None]
+    if not zs: return {"label": cc["label"], "items": items, "median_z": None, "verdict": ""}
+    m = float(np.median(zs)); u = prod["own_z"] if prod["mode"] == "score" else prod["ratio"]
+    hot = [i["name"] for i in items if i["z"] is not None and i["z"] >= thr]
+    if u is not None and u >= thr and m < 0.5: v = "우리만 상승 (경쟁은 평소 수준)"
+    elif u is not None and u >= thr and m < thr: v = "우리 상승, 경쟁도 다소 상승"
+    elif u is not None and u >= thr: v = "분야 전체 상승 (경쟁도 함께 올랐음)"
+    elif m >= thr: v = "경쟁만 상승"
+    else: v = "경쟁·우리 모두 큰 변화 없음"
+    return {"label": cc["label"], "items": items, "median_z": round(m, 2), "our_z": None if u is None else round(float(u), 2), "hot": hot, "verdict": v}
+ 
 def run(asof=None):
     d = load(asof); thr = CFG["threshold"]; M = CFG["event_merge_days"]
     Z, Zc, mkt, out = build(d)
@@ -84,6 +102,10 @@ def run(asof=None):
                               "last_event": str(ev[-1].date()) if ev else None, "event": phase_info(df["ratio"], ev, day, thr, M)}
         for e in ev: log.append({"product": p, "date": e.date(), "ratio": round(float(df['ratio'][e]), 2)})
     res["reference"] = {k: round(float(Z[k].iloc[-1]), 2) for k in CFG["reference"] if k in Z}
+    X = (d / d.mean()).clip(lower=0.05)
+    pct = X.rolling(R).mean() / X.shift(R).rolling(B).mean() - 1          # 최근 7일 평균 vs 직전 28일 평균(%)
+    for p, cc in CFG.get("competitors", {}).items():
+        if p in res["products"]: res["products"][p]["competitors"] = competitor_info(p, cc, Z, pct, res["products"][p], thr)
     return res, pd.DataFrame(log), Z, Zc, out
  
 if __name__ == "__main__":
