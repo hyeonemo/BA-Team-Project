@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-11",
+ "asof": "2026-11-12",
  "items": {
   "아토베리어365 크림": {
    "ok": true,
@@ -379,7 +379,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "옥션",
+     "shop": "G마켓",
      "price": 32400,
      "ship_text": "무료배송",
      "ship": 0,
@@ -389,7 +389,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "G마켓",
+     "shop": "옥션",
      "price": 32400,
      "ship_text": "무료배송",
      "ship": 0,
