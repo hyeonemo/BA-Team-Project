@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-20",
+ "asof": "2026-11-21",
  "items": {
   "아토베리어365 크림": {
    "ok": true,
@@ -99,7 +99,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "신세계몰",
+     "shop": "이마트몰",
      "price": 20700,
      "ship_text": "3,000원",
      "ship": 3000,
@@ -189,6 +189,16 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
+     "shop": "신세계몰",
+     "price": 21600,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 24100,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
      "shop": "SSG.COM",
      "price": 21600,
      "ship_text": "2,500원",
@@ -200,16 +210,6 @@
     },
     {
      "shop": "이마트몰",
-     "price": 21600,
-     "ship_text": "2,500원",
-     "ship": 2500,
-     "total": 24100,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
-     "shop": "신세계몰",
      "price": 21600,
      "ship_text": "2,500원",
      "ship": 2500,
