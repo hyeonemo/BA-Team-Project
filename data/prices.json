@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-22",
+ "asof": "2026-11-23",
  "items": {
   "아토베리어365 크림": {
    "ok": true,
@@ -99,7 +99,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "이마트몰",
+     "shop": "신세계라이브쇼핑",
      "price": 20700,
      "ship_text": "3,000원",
      "ship": 3000,
@@ -199,7 +199,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "이마트몰",
+     "shop": "신세계몰",
      "price": 21600,
      "ship_text": "2,500원",
      "ship": 2500,
@@ -209,7 +209,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "신세계몰",
+     "shop": "이마트몰",
      "price": 21600,
      "ship_text": "2,500원",
      "ship": 2500,
@@ -239,16 +239,6 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"cardLowest \", \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"ca"
     },
     {
-     "shop": "11번가",
-     "price": 23020,
-     "ship_text": "무료배송",
-     "ship": 0,
-     "total": 23020,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
      "shop": "롯데ON",
      "price": 23200,
      "ship_text": "무료배송",
@@ -264,6 +254,16 @@
      "ship_text": "무료배송",
      "ship": 0,
      "total": 23520,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "11번가",
+     "price": 23760,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 23760,
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
