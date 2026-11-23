@@ -1,13 +1,13 @@
 {
  "asof": "2026-11-22",
- "threshold": 1,
+ "threshold": 1.0,
  "market_common_z": -0.37,
  "products": {
   "아토베리어365 크림": {
    "mode": "score",
    "score": 0.151,
-   "ratio": 0.45,
-   "status": "알림 없음",
+   "ratio": 0.7,
+   "status": "진행(둔화)",
    "contrib": {
     "장벽크림": {
      "z_adj": 0.18,
@@ -21,8 +21,29 @@
     }
    },
    "own_z": 0.7,
-   "last_event": "2026-09-10",
-   "event": {},
+   "score_ratio": 0.45,
+   "own_ratio": 0.7,
+   "trigger": null,
+   "ing_ratio": 0.48,
+   "cat_ratio": 0.21,
+   "layers": {
+    "ing": [
+     "세라마이드"
+    ],
+    "cat": [
+     "장벽크림"
+    ]
+   },
+   "pattern": "",
+   "last_event": "2026-11-18",
+   "event": {
+    "start": "2026-11-18",
+    "day_n": 5,
+    "peak": 1.21,
+    "peak_day": "2026-11-19",
+    "prev": 1.06,
+    "phase": "종료"
+   },
    "competitors": {
     "label": "장벽·보습 크림",
     "items": [
@@ -63,6 +84,20 @@
     }
    },
    "own_z": -0.56,
+   "score_ratio": 0.57,
+   "own_ratio": -0.56,
+   "trigger": null,
+   "ing_ratio": 0.57,
+   "cat_ratio": 0.36,
+   "layers": {
+    "ing": [
+     "시카"
+    ],
+    "cat": [
+     "진정크림"
+    ]
+   },
+   "pattern": "",
    "last_event": "2026-11-13",
    "event": {
     "start": "2026-11-13",
@@ -98,12 +133,38 @@
    }
   },
   "테라크네365": {
-   "mode": "own",
-   "score": -3.04,
-   "ratio": -3.04,
+   "mode": "score",
+   "score": 0.067,
+   "ratio": 0.14,
    "status": "알림 없음",
-   "contrib": {},
+   "contrib": {
+    "시카": {
+     "z_adj": 0.53,
+     "weight": 0.24,
+     "part": 0.127
+    },
+    "나이아신아마이드": {
+     "z_adj": -0.29,
+     "weight": 0.21,
+     "part": -0.06
+    }
+   },
    "own_z": -3.04,
+   "score_ratio": 0.14,
+   "own_ratio": -3.04,
+   "trigger": null,
+   "ing_ratio": 0.1,
+   "cat_ratio": 2.17,
+   "layers": {
+    "ing": [
+     "시카",
+     "나이아신아마이드"
+    ],
+    "cat": [
+     "모공크림"
+    ]
+   },
+   "pattern": "C",
    "last_event": "2026-11-04",
    "event": {},
    "competitors": {
@@ -132,14 +193,42 @@
    }
   },
   "리제덤365(PDRN 캡슐크림)": {
-   "mode": "own",
-   "score": -1.35,
-   "ratio": -1.35,
-   "status": "알림 없음",
-   "contrib": {},
+   "mode": "score",
+   "score": 0.12,
+   "ratio": 0.48,
+   "status": "진행(둔화)",
+   "contrib": {
+    "세라마이드": {
+     "z_adj": 0.52,
+     "weight": 0.23,
+     "part": 0.12
+    }
+   },
    "own_z": -1.35,
-   "last_event": "2026-10-18",
-   "event": {},
+   "score_ratio": 0.48,
+   "own_ratio": -1.35,
+   "trigger": null,
+   "ing_ratio": 0.13,
+   "cat_ratio": 0.43,
+   "layers": {
+    "ing": [
+     "PDRN",
+     "세라마이드"
+    ],
+    "cat": [
+     "탄력크림"
+    ]
+   },
+   "pattern": "",
+   "last_event": "2026-11-14",
+   "event": {
+    "start": "2026-11-14",
+    "day_n": 9,
+    "peak": 1.09,
+    "peak_day": "2026-11-14",
+    "prev": 0.18,
+    "phase": "둔화"
+   },
    "competitors": {
     "label": "PDRN·탄력 캡슐크림",
     "items": [
