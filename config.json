@@ -2,7 +2,7 @@
   "start_date": "2024-01-01",
   "api_base": "https://naverapihub.apigw.ntruss.com",
   "threshold": 1.0,
-  "event_merge_days": 14,
+  "event_end_days": 3,
   "window_recent_days": 7,
   "window_base_days": 28,
   "history_days": 365,

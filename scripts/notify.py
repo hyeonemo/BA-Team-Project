@@ -71,7 +71,10 @@ def progress_text(res, p, r, ev, refline):
     if ev["phase"] == "확대": l1, l2 = f"• 평소 폭의 *{now:.1f}배*로 정점을 새로 찍었다 ({chg})", "• 판단: 아직 오르는 중 — 지켜볼 구간"
     elif ev["phase"] == "지속": l1, l2 = f"• 평소 폭의 *{now:.1f}배* ({chg})", f"• 판단: 정점 부근에서 높은 수준이 유지되는 중 ({pct})"
     elif ev["phase"] == "완화": l1, l2 = f"• 평소 폭의 *{now:.1f}배*로 내려오는 중 ({chg})", f"• 판단: 정점에서 꺾였지만 기준({thr:.1f}배)보다는 높다 ({pct})"
-    else: l1, l2 = f"• 기준({thr:.1f}배) 아래로 내려왔다 ({chg})", f"• 이번 급등: 정점 {peak:.1f}배({_md(ev['peak_day'])}), 시작부터 {ev['day_n']}일"
+    else:
+        nb = ev.get("below") or 1
+        l1 = f"• 기준({thr:.1f}배) 아래로 내려왔다 ({chg})" if nb <= 1 else f"• 기준({thr:.1f}배) 아래로 {nb}일 연속 내려와 사건을 닫았다 ({chg})"
+        l2 = f"• 이번 급등: 정점 {peak:.1f}배({_md(ev['peak_day'])}), 시작부터 {ev['day_n']}일"
     lines = [head, l1, l2]
     lab = PAT.get(r.get("pattern") or "", ("", ""))[0]
     lines.append(f"• 현재 신호: {layer_text(r)}" + (f" → {lab}" if lab and ev["phase"] != "종료" else ""))

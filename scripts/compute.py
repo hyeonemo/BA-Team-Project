@@ -1,4 +1,4 @@
-"""data/search_daily.csv -> 키워드 z, 시장 공통 제거, 제품 총점수, 1.0배 판정, 14일 사건 묶음 -> data/latest.json, data/alert_log.csv
+"""data/search_daily.csv -> 키워드 z, 시장 공통 제거, 제품 총점수, 1.0배 판정, 사건 상태 추적(연속 3일 기준 아래면 종료) -> data/latest.json, data/alert_log.csv
 매일 계산하는 것: 정규화 -> 변화(최근 7일 vs 직전 28일) -> z(과거 365일) -> 공통 제거 -> 점수.
 고정값(연결 강도, 기준)은 config.json 에 있다.
 """
@@ -60,35 +60,45 @@ def pattern(ing, cat, own, sr, thr):
     parts = [n for n, v in (("I", ing), ("C", cat), ("P", own)) if up(v)]
     return "+".join(parts) if parts else ("S" if up(sr) else "")
 
-def events(ratio, thr, merge_days):
-    """thr 이상인 날 중 직전 사건 시작일로부터 merge_days 넘게 지난 날 = 새 사건 시작. 이후 merge_days 동안은 '진행'."""
-    ev, last = [], None
-    for t in ratio.index[ratio >= thr]:
-        if last is None or (t - last).days > merge_days:
-            ev.append(t); last = t
-    return ev
+def track(ratio, thr, end_days):
+    """날마다 사건 상태를 이어서 추적한다 (고정 14일 창 대신 상태 기계).
+    - 기준 이상인 첫날(열린 사건 없음) = 시작. 열린 사건 중 기준 이상 = 확대/지속/완화.
+    - 기준 아래로 end_days일 연속 내려가면 그날 '종료'로 사건을 닫는다. 그 전까지는 '둔화'(사건은 열려 있음 -> 잠깐 흔들려도 같은 사건).
+    - 닫힌 뒤 다시 기준 이상이 되면 새 사건의 '시작'."""
+    rows, active, s, peak, below, prev = {}, False, None, None, 0, None
+    for t, r in ratio.dropna().items():
+        if r >= thr:
+            if not active: active, s, peak, below = True, t, r, 0; ph = "시작"
+            else:
+                peak = max(peak, r); below = 0
+                ph = "확대" if r >= peak - 1e-9 else ("지속" if r >= 0.8 * peak else "완화")
+        elif active:
+            below += 1
+            if below >= end_days: ph = "종료"; active = False
+            else: ph = "둔화"
+        else: ph = None
+        if ph: rows[t] = {"start": s, "peak": peak, "prev": prev, "phase": ph, "r": r, "below": below}
+        prev = r
+    return rows
 
-def status_on(ratio, ev, day, thr, merge_days):
+def events(ratio, thr, end_days):
+    """사건 시작일 목록 (track 의 '시작' 날)."""
+    return [t for t, v in track(ratio, thr, end_days).items() if v["phase"] == "시작"]
+
+def status_on(ratio, tr, day):
     r = ratio.get(day, np.nan)
     if np.isnan(r): return "데이터 없음"
-    if day in set(ev): return "새 사건"
-    in_event = any(0 < (day - e).days <= merge_days for e in ev)
-    if in_event and r >= thr: return "진행(유지·확대)"
-    if in_event: return "진행(둔화)"
-    return "알림 없음"
+    v = tr.get(day)
+    if v is None: return "알림 없음"
+    return {"시작": "새 사건", "확대": "진행(유지·확대)", "지속": "진행(유지·확대)", "완화": "진행(유지·확대)", "둔화": "진행(둔화)", "종료": "진행(둔화)"}[v["phase"]]
 
-def phase_info(ratio, ev, day, thr, merge_days):
-    """사건 진행 중이면 {시작일, 며칠째, 정점, 어제 값, 국면}. 국면: 시작 / 확대(정점 갱신) / 지속(정점의 80% 이상) / 완화(정점의 80% 미만) / 종료(오늘 처음 기준 아래) / 둔화."""
-    starts = [e for e in ev if e <= day]
-    if not starts or (day - starts[-1]).days > merge_days: return {}
-    s = starts[-1]; seg = ratio[(ratio.index >= s) & (ratio.index <= day)].dropna()
-    if seg.empty: return {}
-    r, peak = float(seg.iloc[-1]), float(seg.max()); prev = float(seg.iloc[-2]) if len(seg) > 1 else None
-    if day == s: ph = "시작"
-    elif r >= thr: ph = "확대" if r >= peak - 1e-9 else ("지속" if r >= 0.8 * peak else "완화")
-    else: ph = "종료" if (prev is not None and prev >= thr) else "둔화"
-    return {"start": str(s.date()), "day_n": (day - s).days + 1, "peak": round(peak, 2), "peak_day": str(seg.idxmax().date()),
-            "prev": round(prev, 2) if prev is not None else None, "phase": ph}
+def phase_info(ratio, tr, day):
+    """사건 중이면 {시작일, 며칠째, 정점, 어제 값, 국면}. 국면: 시작 / 확대(정점 갱신) / 지속(정점의 80% 이상) / 완화(정점의 80% 미만) / 둔화(기준 아래, 아직 열린 사건) / 종료(기준 아래 end_days일째, 사건 닫힘)."""
+    v = tr.get(day)
+    if v is None: return {}
+    seg = ratio[(ratio.index >= v["start"]) & (ratio.index <= day)].dropna()
+    return {"start": str(v["start"].date()), "day_n": (day - v["start"]).days + 1, "peak": round(float(v["peak"]), 2),
+            "peak_day": str(seg.idxmax().date()), "below": v["below"], "prev": None if v["prev"] is None else round(float(v["prev"]), 2), "phase": v["phase"]}
 
 def competitor_info(p, cc, Z, pct, prod, thr):
     """경쟁 제품 검색 변화: 우리 알림과 같은 계산(최근 7일 vs 직전 28일 → 365일 기준 z). 이력이 짧아 z 를 못 구하면 z=None."""
@@ -109,14 +119,14 @@ def competitor_info(p, cc, Z, pct, prod, thr):
     return {"label": cc["label"], "items": items, "median_z": round(m, 2), "our_z": None if u is None else round(float(u), 2), "hot": hot, "verdict": v}
 
 def run(asof=None):
-    d = load(asof); thr = CFG["threshold"]; M = CFG["event_merge_days"]
+    d = load(asof); thr = CFG["threshold"]; M = CFG["event_end_days"]
     Z, Zc, mkt, out = build(d)
     day = d.index[-1]
     res = {"asof": str(day.date()), "threshold": thr, "market_common_z": round(float(mkt.iloc[-1]), 2), "products": {}}
     log = []
     for p, c in CFG["products"].items():
-        df = out[p]; ev = events(df["ratio"].dropna(), thr, M)
-        st = status_on(df["ratio"], ev, day, thr, M)
+        df = out[p]; tr = track(df["ratio"], thr, M); ev = [t for t, v in tr.items() if v["phase"] == "시작"]
+        st = status_on(df["ratio"], tr, day)
         contrib = {}
         if c["mode"] == "score":
             contrib = {k: {"z_adj": round(float(Zc[k].iloc[-1]), 2), "weight": w, "part": round(float(Zc[k].iloc[-1]) * w, 3)} for k, w in c["weights"].items()}
@@ -129,7 +139,7 @@ def run(asof=None):
                               "cat_ratio": None if np.isnan(df["cat_ratio"].iloc[-1]) else round(float(df["cat_ratio"].iloc[-1]), 2),
                               "layers": c.get("layers") or {},
                               "pattern": pattern(df["ing_ratio"].iloc[-1], df["cat_ratio"].iloc[-1], df["own_ratio"].iloc[-1], df["score_ratio"].iloc[-1], thr),
-                              "last_event": str(ev[-1].date()) if ev else None, "event": phase_info(df["ratio"], ev, day, thr, M)}
+                              "last_event": str(ev[-1].date()) if ev else None, "event": phase_info(df["ratio"], tr, day)}
         for e in ev: log.append({"product": p, "date": e.date(), "ratio": round(float(df['ratio'][e]), 2)})
     res["reference"] = {k: round(float(Z[k].iloc[-1]), 2) for k in CFG["reference"] if k in Z}
     X = (d / d.mean()).clip(lower=0.05)

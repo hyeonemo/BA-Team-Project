@@ -3,7 +3,7 @@
 매일 아침 네이버 데이터랩 검색량으로 제품 총점수를 계산해 슬랙으로 알리고, `docs/index.html`(공개 페이지)을 갱신한다.
 
 ## 구조
-- `config.json` : 키워드 풀, 제품별 연결 키워드·연결 강도, 기준(1.0배), 사건 묶음(14일)
+- `config.json` : 키워드 풀, 제품별 연결 키워드·연결 강도, 기준(1.0배), 사건 종료 기준(연속 3일, event_end_days)
 - `scripts/collect.py` : 데이터랩 일 단위 검색량 수집 -> `data/search_daily.csv`
 - `scripts/compute.py` : z, 시장 공통 제거, 총점수, 1.0배 판정 -> `data/latest.json`, `data/alert_log.csv`
 - `scripts/report.py` : 독립 실행 HTML 생성 -> `docs/index.html`
