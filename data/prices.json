@@ -1,5 +1,5 @@
 {
- "asof": "2026-11-26",
+ "asof": "2026-11-27",
  "items": {
   "아토베리어365 크림": {
    "ok": true,
@@ -169,6 +169,16 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
+     "shop": "롯데ON",
+     "price": 19900,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 22400,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
      "shop": "신세계라이브쇼핑",
      "price": 20250,
      "ship_text": "2,500원",
@@ -189,16 +199,6 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "롯데ON",
-     "price": 21220,
-     "ship_text": "2,500원",
-     "ship": 2500,
-     "total": 23720,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
      "shop": "이마트몰",
      "price": 21600,
      "ship_text": "2,500원",
@@ -209,7 +209,7 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "신세계몰",
+     "shop": "SSG.COM",
      "price": 21600,
      "ship_text": "2,500원",
      "ship": 2500,
@@ -230,23 +230,13 @@
    "sellers": [
     {
      "shop": "롯데ON",
-     "price": 21250,
+     "price": 21220,
      "ship_text": "무료배송",
      "ship": 0,
-     "total": 21250,
+     "total": 21220,
      "ship_known": true,
      "card": "롯데카드",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"cardLowest \", \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"ca"
-    },
-    {
-     "shop": "롯데ON",
-     "price": 22840,
-     "ship_text": "무료배송",
-     "ship": 0,
-     "total": 22840,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
      "shop": "nsmall",
@@ -269,17 +259,27 @@
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
-     "shop": "G마켓",
-     "price": 22320,
+     "shop": "롯데ON",
+     "price": 21880,
      "ship_text": "2,500원",
      "ship": 2500,
-     "total": 24820,
+     "total": 24380,
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.enuri.com/move/"
     },
     {
      "shop": "옥션",
+     "price": 22320,
+     "ship_text": "2,500원",
+     "ship": 2500,
+     "total": 24820,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
+    },
+    {
+     "shop": "G마켓",
      "price": 22320,
      "ship_text": "2,500원",
      "ship": 2500,
@@ -340,13 +340,33 @@
    "sellers": [
     {
      "shop": "롯데ON",
-     "price": 29010,
+     "price": 28930,
      "ship_text": "무료배송",
      "ship": 0,
-     "total": 29010,
+     "total": 28930,
      "ship_known": true,
      "card": "롯데카드",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"cardLowest \", \"cardInfo \":{ \"cardNameText \": \"롯데카드 \", \"ca"
+    },
+    {
+     "shop": "옥션",
+     "price": 29950,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 29950,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.enuri.com/move/"
+    },
+    {
+     "shop": "G마켓",
+     "price": 29960,
+     "ship_text": "무료배송",
+     "ship": 0,
+     "total": 29960,
+     "ship_known": true,
+     "card": "",
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
      "shop": "신세계라이브쇼핑",
@@ -356,7 +376,7 @@
      "total": 30380,
      "ship_known": true,
      "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"type \": \"lowest \", \"bridgePageLink \": \"https://www.enuri.com/move/"
+     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
     },
     {
      "shop": "SSG.COM",
@@ -380,10 +400,10 @@
     },
     {
      "shop": "롯데ON",
-     "price": 31190,
+     "price": 31100,
      "ship_text": "무료배송",
      "ship": 0,
-     "total": 31190,
+     "total": 31100,
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
@@ -414,26 +434,6 @@
      "ship_text": "무료배송",
      "ship": 0,
      "total": 32204,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
-     "shop": "옥션",
-     "price": 30410,
-     "ship_text": "2,500원",
-     "ship": 2500,
-     "total": 32910,
-     "ship_known": true,
-     "card": "",
-     "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"
-    },
-    {
-     "shop": "G마켓",
-     "price": 30420,
-     "ship_text": "2,500원",
-     "ship": 2500,
-     "total": 32920,
      "ship_known": true,
      "card": "",
      "after": ", \"quickDeliveryInfo \":{ \"isQuickDelivery \":false, \"quickDeliveryText \": \" \"}, \"reward \":[], \"bridgePageLink \": \"https://www.enuri.com/move/Redirect.jsp?cmd=mov"

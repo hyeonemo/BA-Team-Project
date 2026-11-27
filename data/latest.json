@@ -1,31 +1,31 @@
 {
- "asof": "2026-11-25",
+ "asof": "2026-11-26",
  "threshold": 1.0,
- "market_common_z": -0.35,
+ "market_common_z": -0.32,
  "products": {
   "아토베리어365 크림": {
    "mode": "score",
-   "score": 0.067,
-   "ratio": 0.74,
+   "score": 0.081,
+   "ratio": 0.59,
    "status": "진행(둔화)",
    "contrib": {
     "장벽크림": {
-     "z_adj": 0.13,
+     "z_adj": 0.3,
      "weight": 0.26,
-     "part": 0.035
+     "part": 0.078
     },
     "세라마이드": {
-     "z_adj": 0.16,
+     "z_adj": 0.02,
      "weight": 0.2,
-     "part": 0.032
+     "part": 0.004
     }
    },
-   "own_z": 0.74,
-   "score_ratio": 0.22,
-   "own_ratio": 0.74,
+   "own_z": 0.59,
+   "score_ratio": 0.27,
+   "own_ratio": 0.59,
    "trigger": null,
-   "ing_ratio": 0.14,
-   "cat_ratio": 0.18,
+   "ing_ratio": 0.0,
+   "cat_ratio": 0.37,
    "layers": {
     "ing": [
      "세라마이드"
@@ -35,36 +35,37 @@
     ]
    },
    "pattern": "",
-   "last_event": "2026-11-18",
+   "last_event": "2026-11-16",
    "event": {
-    "start": "2026-11-18",
-    "day_n": 8,
+    "start": "2026-11-16",
+    "day_n": 11,
     "peak": 1.21,
     "peak_day": "2026-11-19",
-    "prev": 1.06,
-    "phase": "종료"
+    "below": 2,
+    "prev": 0.74,
+    "phase": "둔화"
    },
    "competitors": {
     "label": "장벽·보습 크림",
     "items": [
      {
       "name": "제로이드 인텐시브",
-      "z": -0.49,
-      "pct": -15
+      "z": -0.33,
+      "pct": -11
      },
      {
       "name": "피지오겔 DMT",
-      "z": 0.41,
-      "pct": 9
+      "z": 0.3,
+      "pct": 5
      },
      {
       "name": "리얼베리어 크림",
-      "z": 1.59,
-      "pct": 53
+      "z": 1.07,
+      "pct": 34
      }
     ],
-    "median_z": 0.41,
-    "our_z": 0.74,
+    "median_z": 0.3,
+    "our_z": 0.59,
     "hot": [
      "리얼베리어 크림"
     ],
@@ -73,22 +74,22 @@
   },
   "에이시카365": {
    "mode": "score",
-   "score": -0.188,
-   "ratio": 1.44,
+   "score": -0.172,
+   "ratio": 1.82,
    "status": "진행(유지·확대)",
    "contrib": {
     "시카": {
-     "z_adj": -0.57,
+     "z_adj": -0.52,
      "weight": 0.33,
-     "part": -0.188
+     "part": -0.172
     }
    },
-   "own_z": 1.44,
-   "score_ratio": -0.68,
-   "own_ratio": 1.44,
+   "own_z": 1.82,
+   "score_ratio": -0.63,
+   "own_ratio": 1.82,
    "trigger": "own",
-   "ing_ratio": -0.68,
-   "cat_ratio": 0.12,
+   "ing_ratio": -0.63,
+   "cat_ratio": 0.0,
    "layers": {
     "ing": [
      "시카"
@@ -98,63 +99,64 @@
     ]
    },
    "pattern": "P",
-   "last_event": "2026-11-13",
+   "last_event": "2026-11-24",
    "event": {
-    "start": "2026-11-13",
-    "day_n": 13,
+    "start": "2026-11-24",
+    "day_n": 3,
     "peak": 1.82,
-    "peak_day": "2026-11-17",
-    "prev": 1.04,
-    "phase": "완화"
+    "peak_day": "2026-11-26",
+    "below": 0,
+    "prev": 1.44,
+    "phase": "확대"
    },
    "competitors": {
     "label": "시카·진정 크림",
     "items": [
      {
       "name": "브링그린 티트리 시카",
-      "z": -0.61,
-      "pct": -13
+      "z": -0.9,
+      "pct": -19
      },
      {
       "name": "바이오더마 시카비오",
-      "z": 0.87,
-      "pct": 15
+      "z": 0.91,
+      "pct": 16
      },
      {
       "name": "메디힐 마데카소사이드",
-      "z": -0.05,
-      "pct": -6
+      "z": -0.13,
+      "pct": -7
      }
     ],
-    "median_z": -0.05,
-    "our_z": 1.44,
+    "median_z": -0.13,
+    "our_z": 1.82,
     "hot": [],
     "verdict": "우리만 상승 (경쟁은 평소 수준)"
    }
   },
   "테라크네365": {
    "mode": "score",
-   "score": -0.273,
-   "ratio": -0.88,
+   "score": -0.284,
+   "ratio": -0.91,
    "status": "알림 없음",
    "contrib": {
     "시카": {
-     "z_adj": -0.57,
+     "z_adj": -0.52,
      "weight": 0.24,
-     "part": -0.137
+     "part": -0.125
     },
     "나이아신아마이드": {
-     "z_adj": -0.65,
+     "z_adj": -0.76,
      "weight": 0.21,
-     "part": -0.136
+     "part": -0.159
     }
    },
-   "own_z": -3.01,
-   "score_ratio": -0.88,
-   "own_ratio": -3.01,
+   "own_z": -2.86,
+   "score_ratio": -0.91,
+   "own_ratio": -2.86,
    "trigger": null,
-   "ing_ratio": -0.88,
-   "cat_ratio": 1.87,
+   "ing_ratio": -0.92,
+   "cat_ratio": 2.12,
    "layers": {
     "ing": [
      "시카",
@@ -172,44 +174,44 @@
     "items": [
      {
       "name": "제로이드 핌프로브",
-      "z": -1.4,
-      "pct": -17
+      "z": -1.32,
+      "pct": -16
      },
      {
       "name": "파티온 노스카나인",
-      "z": -1.27,
-      "pct": -23
+      "z": -0.99,
+      "pct": -19
      },
      {
       "name": "넘버즈인 1번",
-      "z": -0.9,
-      "pct": -24
+      "z": -0.66,
+      "pct": -20
      }
     ],
-    "median_z": -1.27,
-    "our_z": -3.01,
+    "median_z": -0.99,
+    "our_z": -2.86,
     "hot": [],
     "verdict": "경쟁·우리 모두 큰 변화 없음"
    }
   },
   "리제덤365(PDRN 캡슐크림)": {
    "mode": "score",
-   "score": 0.037,
-   "ratio": 0.14,
-   "status": "진행(둔화)",
+   "score": 0.004,
+   "ratio": 0.0,
+   "status": "알림 없음",
    "contrib": {
     "세라마이드": {
-     "z_adj": 0.16,
+     "z_adj": 0.02,
      "weight": 0.23,
-     "part": 0.037
+     "part": 0.004
     }
    },
-   "own_z": -0.31,
-   "score_ratio": 0.14,
-   "own_ratio": -0.31,
+   "own_z": -0.19,
+   "score_ratio": 0.0,
+   "own_ratio": -0.19,
    "trigger": null,
-   "ing_ratio": -0.31,
-   "cat_ratio": 0.39,
+   "ing_ratio": -0.43,
+   "cat_ratio": 0.21,
    "layers": {
     "ing": [
      "PDRN",
@@ -221,42 +223,37 @@
    },
    "pattern": "",
    "last_event": "2026-11-14",
-   "event": {
-    "start": "2026-11-14",
-    "day_n": 12,
-    "peak": 1.09,
-    "peak_day": "2026-11-14",
-    "prev": 0.06,
-    "phase": "둔화"
-   },
+   "event": {},
    "competitors": {
     "label": "PDRN·탄력 캡슐크림",
     "items": [
      {
       "name": "메디큐브 PDRN",
-      "z": 0.73,
-      "pct": 23
+      "z": 0.56,
+      "pct": 17
      },
      {
       "name": "아누아 PDRN",
-      "z": -0.6,
-      "pct": -26
+      "z": -0.41,
+      "pct": -20
      },
      {
       "name": "리쥬란 힐러",
-      "z": -0.32,
-      "pct": -6
+      "z": 1.07,
+      "pct": 6
      }
     ],
-    "median_z": -0.32,
-    "our_z": -0.31,
-    "hot": [],
+    "median_z": 0.56,
+    "our_z": -0.19,
+    "hot": [
+     "리쥬란 힐러"
+    ],
     "verdict": "경쟁·우리 모두 큰 변화 없음"
    }
   }
  },
  "reference": {
-  "에스트라": 2.7,
+  "에스트라": 1.9,
   "아토베리어": 1.84
  }
 }
