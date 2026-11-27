@@ -13,6 +13,7 @@ jobs:
       NAVER_CLIENT_SECRET: ${{ secrets.NAVER_CLIENT_SECRET }}
       SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       PAGE_URL: ${{ vars.PAGE_URL }}
+      TENANT_WEBHOOKS: ${{ secrets.TENANT_WEBHOOKS }}   # {"기업": "슬랙 웹훅 주소"} (기업이 없으면 비워도 됨)
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -24,9 +25,12 @@ jobs:
       - name: 발송 (월요일이면 주간 브리핑 포함)
         run: |
           if [ "$(TZ=Asia/Seoul date +%u)" = "1" ]; then python scripts/notify.py --weekly; else python scripts/notify.py; fi
+      - name: 등록된 기업 전체 실행 (처음이면 과거 데이터 받기부터)
+        run: |
+          if [ "$(TZ=Asia/Seoul date +%u)" = "1" ]; then python scripts/tenant.py run --weekly; else python scripts/tenant.py run; fi
       - name: 결과 저장
         run: |
           git config user.name "alert-bot"; git config user.email "bot@users.noreply.github.com"
-          git add data docs
+          git add data docs tenants
           git commit -m "daily run $(date -u +%F)" || echo "변경 없음"
           git push

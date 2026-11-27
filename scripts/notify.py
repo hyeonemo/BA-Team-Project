@@ -6,8 +6,9 @@ try:
     import prices
 except Exception:      # 가격 모듈에 문제가 있어도 알림은 계속 나가게 한다
     prices = None
+if os.environ.get("BA_ROOT"): prices = None      # 기업(테넌트) 실행에서는 에스트라 가격 매핑을 쓰지 않는다
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.environ.get("BA_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # BA_ROOT: 기업(테넌트) 폴더로 바꿔 돌릴 때
 CFG = json.load(open(os.path.join(ROOT, "config.json"), encoding="utf-8"))
 SENT = os.path.join(ROOT, "data", "sent.json")
 PAGE_URL = os.environ.get("PAGE_URL", "")

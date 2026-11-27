@@ -5,7 +5,7 @@
 import os, json, sys
 import numpy as np, pandas as pd
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.environ.get("BA_ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # BA_ROOT: 기업(테넌트) 폴더로 바꿔 돌릴 때
 CFG = json.load(open(os.path.join(ROOT, "config.json"), encoding="utf-8"))
 R, B, H = CFG["window_recent_days"], CFG["window_base_days"], CFG["history_days"]
 

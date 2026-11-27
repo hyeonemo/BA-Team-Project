@@ -22,3 +22,16 @@ export NAVER_CLIENT_ID=... NAVER_CLIENT_SECRET=...
 python scripts/collect.py && python scripts/compute.py && (cd scripts && python report.py) && python scripts/notify.py --dry
 ```
 **키와 Webhook 주소는 절대 파일에 적거나 커밋하지 않는다.**
+
+
+## 여러 기업이 쓰게 하기 (자동 온보딩)
+
+기업이 브랜드·제품·경쟁사·슬랙 주소만 입력하면 다음 실행부터 알림이 가는 구조.
+
+1. 입력 폼에서 받은 내용(JSON)을 `python scripts/tenant.py add 폼.json` 으로 넣으면 `tenants/<기업>/config.json` 이 만들어진다.
+2. 다음 `daily-alert` 실행 때 `scripts/tenant.py run` 이 그 기업의 과거 검색 흐름을 받아 기준선을 만들고, 연결 강도(상관계수)를 계산하고, 슬랙에 "연결 완료" 메시지를 보낸다. 그날부터 매일 알림.
+3. 기업마다 설정·데이터·보낸 알림 기록이 따로(`tenants/<기업>/`)라서 섞이지 않는다. 한 기업이 실패해도 다른 기업은 계속 돈다.
+4. 네이버 API 키는 운영자 것 하나(`NAVER_CLIENT_ID/SECRET`)를 공유한다. 슬랙 주소는 저장소에 올리지 않고 `TENANT_WEBHOOKS`(JSON) 시크릿으로 받는다.
+5. 알림 문구에서 에스트라 전용 가격 줄은 기업 실행에서 빠진다.
+
+한계(시연용): 입력은 파일로 받고, 기업 수가 늘면 네이버 호출 한도·실행 시간이 병목이 된다. 실제 서비스는 DB와 비밀 저장소가 필요하다.
