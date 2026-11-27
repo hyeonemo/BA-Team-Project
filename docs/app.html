@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>검색 트렌드 알림 · 기업 등록 / 시뮬레이터</title>
+<style>
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{display:flex;flex-direction:column;font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:#f5f8fb;color:#17314a}
+  .tabs{flex:none;display:flex;gap:6px;align-items:flex-end;padding:10px 16px 0;background:#092033}
+  .tabs .title{color:#cfe0ea;font-weight:700;font-size:14px;margin-right:12px;padding-bottom:10px;white-space:nowrap}
+  .tab{appearance:none;border:0;cursor:pointer;font:inherit;font-size:15px;font-weight:700;padding:11px 20px;border-radius:10px 10px 0 0;background:#16405f;color:#b9d0de}
+  .tab:hover{background:#1d4f74;color:#fff}
+  .tab[aria-selected="true"]{background:#f5f8fb;color:#102f49}
+  .tab:focus-visible{outline:3px solid #79b7c6;outline-offset:-3px}
+  .panes{flex:1;min-height:0;position:relative}
+  iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:#f5f8fb;display:none}
+  iframe.on{display:block}
+  @media(max-width:560px){.tabs .title{display:none}.tab{flex:1;padding:12px 8px}}
+</style>
+</head>
+<body>
+<div class="tabs" role="tablist">
+  <span class="title">검색 트렌드 알림</span>
+  <button class="tab" role="tab" id="t-reg" aria-selected="true" aria-controls="f-reg">기업 등록</button>
+  <button class="tab" role="tab" id="t-sim" aria-selected="false" aria-controls="f-sim">알림 기준 시뮬레이터</button>
+</div>
+<div class="panes">
+  <iframe id="f-reg" class="on" title="기업 등록" src="onboard.html"></iframe>
+  <iframe id="f-sim" title="알림 기준 시뮬레이터" data-src="simulator.html?embed=1"></iframe>
+</div>
+<script>
+  const T = {reg: document.getElementById('t-reg'), sim: document.getElementById('t-sim')};
+  const F = {reg: document.getElementById('f-reg'), sim: document.getElementById('f-sim')};
+  function show(k, push){
+    for (const x of ['reg','sim']) {
+      T[x].setAttribute('aria-selected', x === k);
+      F[x].classList.toggle('on', x === k);
+    }
+    if (k === 'sim' && !F.sim.src) F.sim.src = F.sim.dataset.src;   // 처음 열 때만 불러옴
+    if (push) history.replaceState(null, '', k === 'sim' ? '#sim' : '#');
+  }
+  T.reg.onclick = () => show('reg', true);
+  T.sim.onclick = () => show('sim', true);
+  show(location.hash === '#sim' ? 'sim' : 'reg', false);
+</script>
+</body>
+</html>
