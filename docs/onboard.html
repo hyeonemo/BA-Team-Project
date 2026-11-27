@@ -68,7 +68,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="card">
         <h2>1. 브랜드와 알림 받을 곳</h2>
         <label for="brand">브랜드 이름</label>
-        <input id="brand" placeholder="예: 에스트라">
+        <input id="brand" placeholder="예) 에스트라">
         <div class="row">
           <div>
             <label for="thr">알림 기준 (평소 폭의 몇 배)</label>
@@ -92,7 +92,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
       <div class="card">
         <h2>3. 같은 시장의 비교 키워드</h2>
         <label for="extra">추가 키워드 (쉼표로 구분)</label>
-        <textarea id="extra" rows="2" placeholder="예: 트라넥삼산, 레티날, 히알루론산, 수분크림"></textarea>
+        <textarea id="extra" rows="2" placeholder="예) 트라넥삼산, 레티날, 히알루론산, 수분크림"></textarea>
         <p class="hint">시장 전체가 같이 오르는 날(예: 계절, 이슈)을 걸러내는 데 씁니다. 성분·카테고리 키워드와 합쳐 8개 이상이면 좋습니다.</p>
       </div>
     </div>
@@ -152,6 +152,7 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
 <script>
 const $ = s => document.querySelector(s);
+const un = t => (t||"").replace(/^\s*예\)\s*/, "");
 const split = t => (t||"").split(/[,\n，]/).map(x=>x.trim()).filter(Boolean);
 const uniq = a => a.filter((x,i)=>a.indexOf(x)===i);
 const slugify = n => (n.replace(/[^0-9A-Za-z가-힣]+/g,"-").replace(/^-+|-+$/g,"")) || "기업";
@@ -162,16 +163,17 @@ function addProd(v){
   const d = document.createElement("div"); d.className = "prod";
   d.innerHTML = `
     <div class="prod-head"><span>제품</span><button class="link rm">삭제</button></div>
-    <label>제품 이름</label><input class="p-name" placeholder="예: 에이시카365">
+    <label>제품 이름</label><input class="p-name" placeholder="예) 에이시카365">
     <div class="row">
-      <div><label>성분·효과 키워드</label><input class="p-ing" placeholder="예: 센텔라, 시카"></div>
-      <div><label>카테고리 키워드</label><input class="p-cat" placeholder="예: 진정크림"></div>
+      <div><label>성분·효과 키워드</label><input class="p-ing" placeholder="예) 센텔라, 시카"></div>
+      <div><label>카테고리 키워드</label><input class="p-cat" placeholder="예) 진정크림"></div>
     </div>
-    <label>경쟁 제품 (쉼표로 구분)</label><input class="p-comp" placeholder="예: 브링그린 티트리 시카, 바이오더마 시카비오">
-    <label>경쟁 그룹 이름</label><input class="p-lab" placeholder="예: 시카·진정 크림">`;
-  d.querySelector(".p-name").value = v.name||""; d.querySelector(".p-ing").value = (v.ing||[]).join(", ");
-  d.querySelector(".p-cat").value = (v.cat||[]).join(", "); d.querySelector(".p-comp").value = (v.competitors||[]).join(", ");
-  d.querySelector(".p-lab").value = v.competitor_label||"";
+    <label>경쟁 제품 (쉼표로 구분)</label><input class="p-comp" placeholder="예) 브링그린 티트리 시카, 바이오더마 시카비오">
+    <label>경쟁 그룹 이름</label><input class="p-lab" placeholder="예) 시카·진정 크림">`;
+  const E = t => (v._ex && t) ? "예) " + t : t;
+  d.querySelector(".p-name").value = E(v.name||""); d.querySelector(".p-ing").value = E((v.ing||[]).join(", "));
+  d.querySelector(".p-cat").value = E((v.cat||[]).join(", ")); d.querySelector(".p-comp").value = E((v.competitors||[]).join(", "));
+  d.querySelector(".p-lab").value = E(v.competitor_label||"");
   d.querySelector(".rm").onclick = () => { d.remove(); render(); };
   d.addEventListener("input", render);
   $("#prods").appendChild(d);
@@ -179,12 +181,12 @@ function addProd(v){
 
 function collect(){
   const products = [...document.querySelectorAll(".prod")].map(d => ({
-    name: d.querySelector(".p-name").value.trim(),
-    ing: uniq(split(d.querySelector(".p-ing").value)), cat: uniq(split(d.querySelector(".p-cat").value)),
-    competitor_label: d.querySelector(".p-lab").value.trim(), competitors: uniq(split(d.querySelector(".p-comp").value))
+    name: un(d.querySelector(".p-name").value).trim(),
+    ing: uniq(split(un(d.querySelector(".p-ing").value))), cat: uniq(split(un(d.querySelector(".p-cat").value))),
+    competitor_label: un(d.querySelector(".p-lab").value).trim(), competitors: uniq(split(un(d.querySelector(".p-comp").value)))
   })).filter(p => p.name);
   products.forEach(p => { if(!p.competitors.length){ delete p.competitors; delete p.competitor_label } else if(!p.competitor_label) delete p.competitor_label; });
-  return { brand: $("#brand").value.trim(), threshold: parseFloat($("#thr").value)||1.0, products, extra_keywords: uniq(split($("#extra").value)) };
+  return { brand: un($("#brand").value).trim(), threshold: parseFloat($("#thr").value)||1.0, products, extra_keywords: uniq(split(un($("#extra").value))) };
 }
 
 function render(){
@@ -227,10 +229,10 @@ $("#addp").onclick = () => { addProd(); render(); };
 
 function fill(){
   $("#prods").innerHTML = "";
-  $("#brand").value = "데모브랜드"; $("#thr").value = "1.0"; $("#hook").value = "";
-  $("#extra").value = "트라넥삼산, 레티날, PDRN, 히알루론산, 나이아신아마이드, 판테놀, 펩타이드, 수분크림";
-  addProd({name:"에이시카365", ing:["센텔라","시카"], cat:["진정크림"], competitor_label:"시카·진정 크림", competitors:["브링그린 티트리 시카","바이오더마 시카비오","메디힐 마데카소사이드"]});
-  addProd({name:"아토베리어365 크림", ing:["세라마이드"], cat:["장벽크림"], competitors:["제로이드 인텐시브","피지오겔 DMT"]});
+  $("#brand").value = "예) 데모브랜드"; $("#thr").value = "1.0"; $("#hook").value = "";
+  $("#extra").value = "예) 트라넥삼산, 레티날, PDRN, 히알루론산, 나이아신아마이드, 판테놀, 펩타이드, 수분크림";
+  addProd({_ex:true, name:"에이시카365", ing:["센텔라","시카"], cat:["진정크림"], competitor_label:"시카·진정 크림", competitors:["브링그린 티트리 시카","바이오더마 시카비오","메디힐 마데카소사이드"]});
+  addProd({_ex:true, name:"아토베리어365 크림", ing:["세라마이드"], cat:["장벽크림"], competitors:["제로이드 인텐시브","피지오겔 DMT"]});
   render();
 }
 $("#fill").onclick = fill;

@@ -33,7 +33,7 @@ class FormError(ValueError):
 
 
 def _s(x, label, n=40, required=False):
-    x = (x or "").strip() if isinstance(x, str) else ""
+    x = re.sub(r"^\s*예\)\s*", "", x or "").strip() if isinstance(x, str) else ""    # 입력칸의 "예) " 표시는 떼고 쓴다
     if required and not x: raise FormError(f"{label}을(를) 입력해 주세요.")
     if len(x) > n: raise FormError(f"{label}이(가) 너무 깁니다 ({n}자 이내).")
     if re.search(r"[\x00-\x1f]", x): raise FormError(f"{label}에 쓸 수 없는 문자가 있습니다.")
