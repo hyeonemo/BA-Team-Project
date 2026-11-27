@@ -2,15 +2,17 @@
 
     python scripts/server.py                 # http://127.0.0.1:8000 (키가 있으면 네이버에서 실제로 받는다)
     python scripts/server.py --demo          # 키 없이: 저장소의 검색 데이터로 대신한다 (발표 시연용)
-    python scripts/server.py --port 9000 --host 0.0.0.0
+    python scripts/server.py --daily-at 07:30  # 매일 이 시각(한국 시간)에 모든 기업을 자동 실행 (실수집 모드는 기본 07:30)
+    ACCESS_CODE=비밀번호 python scripts/server.py --host 0.0.0.0   # 밖에 열 때는 접속 코드가 꼭 필요하다
 
 흐름: 폼 제출(POST /api/register) → 검증 → tenants/<기업>/ 만들기 → 백그라운드로
       과거 데이터 받기 → 연결 강도 계산 → 기준선·알림 계산 → 슬랙 발송 → 화면에서 진행 상태 확인(GET /api/status).
 이후 매일 자동 실행(daily-alert)이 같은 기업 폴더를 이어서 돈다.
 
-로그인이 없으므로 내 컴퓨터(127.0.0.1)에서 시연하는 용도다. 인터넷에 열려면 먼저 인증을 붙여야 한다.
+보호 장치(시범 수준): 접속 코드(환경변수 ACCESS_CODE, 없으면 내 컴퓨터에서만 연다), IP당 시간당 등록 5회 제한, 입력 검증.
+기업별 로그인·DB 는 없다. 실제 서비스로 가려면 README 의 "시범 배포" 아래 한계를 먼저 해결해야 한다.
 """
-import os, re, sys, json, time, shutil, threading, datetime as dt
+import os, re, sys, json, time, hmac, shutil, threading, datetime as dt
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse, parse_qs
 
@@ -24,6 +26,12 @@ HOOK_RE = re.compile(r"^https://hooks\.slack\.com/services/[A-Za-z0-9/_-]+$")
 STAGES = [("collect", "과거 검색 데이터 받기"), ("calibrate", "연결 강도 계산"), ("compute", "기준선·알림 계산"), ("notify", "슬랙 발송")]
 
 DEMO = False
+ACCESS_CODE = os.environ.get("ACCESS_CODE", "")
+KST = dt.timezone(dt.timedelta(hours=9))
+DAILY_AT = None                  # "HH:MM" (한국 시간) 이면 매일 자동 실행
+LAST_RUN = {"at": None, "failures": None, "running": False, "log": ""}
+RATE = {}                        # ip -> 최근 등록 시각들
+RATE_MAX, RATE_WINDOW = 5, 3600
 LOCK = threading.Lock()          # 네이버 호출·계산은 한 번에 하나씩
 STATUS = {}                      # slug -> {"stage", "done", "error", "result", "started"}
 
@@ -125,6 +133,45 @@ def onboard(slug, hook):
         _set(slug, stage="error", done=True, error=str(e)[-300:])
 
 
+def run_all(reason):
+    """등록된 모든 기업을 한 번 돌린다 (월요일이면 주간 브리핑 포함). 매일 자동 실행과 [지금 실행]이 같이 쓴다."""
+    if LAST_RUN["running"]: return False
+    LAST_RUN.update(running=True, log="")
+    lines = []
+    def _log(*a): lines.append(" ".join(str(x) for x in a))
+    T.LOG = _log
+    fail = None
+    try:
+        with LOCK:
+            now = dt.datetime.now(KST)
+            fail = T.run(dry=False, weekly=(now.weekday() == 0), skip_collect=DEMO)
+    except Exception as e:
+        lines.append("실행 오류: " + str(e)[-300:]); fail = -1
+    finally:
+        T.LOG = print
+        LAST_RUN.update(running=False, at=dt.datetime.now(KST).isoformat(timespec="seconds"), failures=fail,
+                        log=(f"({reason})\n" + "\n".join(lines))[-3000:])
+    return True
+
+
+def scheduler():
+    hh, mm = map(int, DAILY_AT.split(":"))
+    now = dt.datetime.now(KST)
+    last = now.date() if (now.hour, now.minute) >= (hh, mm) else None     # 늦게 켰으면 오늘 몫은 건너뛴다
+    while True:
+        now = dt.datetime.now(KST)
+        if last != now.date() and (now.hour, now.minute) >= (hh, mm):
+            last = now.date(); run_all("매일 자동 실행")
+        time.sleep(30)
+
+
+def rate_ok(ip):
+    now = time.time(); hist = [t for t in RATE.get(ip, []) if now - t < RATE_WINDOW]
+    if len(hist) >= RATE_MAX: RATE[ip] = hist; return False
+    hist.append(now); RATE[ip] = hist
+    return True
+
+
 def register(raw):
     form, hook = parse_form(raw)
     cfg, warn = T.build_config(form)
@@ -164,12 +211,21 @@ def list_tenants():
 
 
 class H(BaseHTTPRequestHandler):
-    server_version = "AlertRegister/1.0"
+    server_version = "AlertRegister/1.1"
 
     def _json(self, code, obj):
         b = json.dumps(obj, ensure_ascii=False).encode()
         self.send_response(code); self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(b))); self.send_header("Cache-Control", "no-store"); self.end_headers(); self.wfile.write(b)
+
+    def _ok(self):
+        """접속 코드가 설정돼 있으면 헤더가 맞아야 통과 (시간 차이로 추측하지 못하게 hmac 비교)."""
+        if not ACCESS_CODE: return True
+        return hmac.compare_digest(self.headers.get("X-Access-Code", "").encode(), ACCESS_CODE.encode())
+
+    def _ip(self):
+        f = self.headers.get("X-Forwarded-For", "")
+        return f.split(",")[0].strip() if f else self.client_address[0]
 
     def do_GET(self):
         u = urlparse(self.path)
@@ -177,19 +233,31 @@ class H(BaseHTTPRequestHandler):
             b = open(PAGE, "rb").read()
             self.send_response(200); self.send_header("Content-Type", "text/html; charset=utf-8"); self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
         elif u.path == "/api/ping":
-            self._json(200, {"ok": True, "demo": DEMO, "keys": bool(os.environ.get("NAVER_CLIENT_ID") and os.environ.get("NAVER_CLIENT_SECRET"))})
+            info = {"ok": True, "demo": DEMO, "keys": bool(os.environ.get("NAVER_CLIENT_ID") and os.environ.get("NAVER_CLIENT_SECRET")),
+                    "needs_code": bool(ACCESS_CODE), "authed": self._ok()}
+            if info["authed"]: info.update(daily_at=DAILY_AT, last_run=LAST_RUN)
+            self._json(200, info)
+        elif not self._ok(): self._json(401, {"error": "접속 코드가 맞지 않습니다."})
         elif u.path == "/api/tenants": self._json(200, {"tenants": list_tenants()})
         elif u.path == "/api/status":
             slug = (parse_qs(u.query).get("slug") or [""])[0]
+            if not re.fullmatch(r"[0-9A-Za-z가-힣-]+", slug): return self._json(404, {"error": "등록된 기업이 아닙니다."})
             st = STATUS.get(slug) or next((t for t in list_tenants() if t["slug"] == slug), None)
-            if not st or not re.fullmatch(r"[0-9A-Za-z가-힣-]+", slug): return self._json(404, {"error": "등록된 기업이 아닙니다."})
+            if not st: return self._json(404, {"error": "등록된 기업이 아닙니다."})
             self._json(200, {**st, "steps": [{"id": i, "label": l} for i, l in STAGES]})
         else: self._json(404, {"error": "없는 주소입니다."})
 
     def do_POST(self):
-        if urlparse(self.path).path != "/api/register": return self._json(404, {"error": "없는 주소입니다."})
+        path = urlparse(self.path).path
+        if path not in ("/api/register", "/api/run-now"): return self._json(404, {"error": "없는 주소입니다."})
+        if not self._ok(): return self._json(401, {"error": "접속 코드가 맞지 않습니다."})
+        if path == "/api/run-now":
+            if LAST_RUN["running"]: return self._json(409, {"error": "이미 실행 중입니다."})
+            threading.Thread(target=run_all, args=("지금 실행",), daemon=True).start()
+            return self._json(200, {"started": True})
         n = int(self.headers.get("Content-Length") or 0)
         if n <= 0 or n > MAX_BODY: return self._json(413, {"error": "입력이 너무 큽니다."})
+        if not rate_ok(self._ip()): return self._json(429, {"error": f"등록 요청이 너무 많습니다. 잠시 뒤 다시 시도해 주세요 (IP당 시간당 {RATE_MAX}회)."})
         try: raw = json.loads(self.rfile.read(n).decode("utf-8"))
         except Exception: return self._json(400, {"error": "입력을 읽을 수 없습니다."})
         try: self._json(200, register(raw))
@@ -203,8 +271,15 @@ class H(BaseHTTPRequestHandler):
 if __name__ == "__main__":
     a = sys.argv[1:]
     DEMO = "--demo" in a
-    host = a[a.index("--host") + 1] if "--host" in a else "127.0.0.1"
-    port = int(a[a.index("--port") + 1]) if "--port" in a else 8000
+    host = a[a.index("--host") + 1] if "--host" in a else ("0.0.0.0" if os.environ.get("PORT") else "127.0.0.1")
+    port = int(a[a.index("--port") + 1]) if "--port" in a else int(os.environ.get("PORT", 8000))
+    if host not in ("127.0.0.1", "localhost") and not ACCESS_CODE:
+        sys.exit("밖에서 접속할 수 있게 열려면 접속 코드가 필요합니다. 환경변수 ACCESS_CODE 를 정해 주세요. (예: ACCESS_CODE=내비밀 python scripts/server.py --host 0.0.0.0)")
+    if "--daily-at" in a: DAILY_AT = a[a.index("--daily-at") + 1]
+    elif not DEMO and "--no-schedule" not in a: DAILY_AT = "07:30"
+    if DAILY_AT and not re.fullmatch(r"([01]\d|2[0-3]):[0-5]\d", DAILY_AT): sys.exit("--daily-at 은 HH:MM 형식이어야 합니다 (예: 07:30).")
     os.makedirs(T.TENANTS, exist_ok=True)
-    print(f"기업 등록 서버: http://{host}:{port}  ({'데모 데이터' if DEMO else '네이버 실제 수집'})")
+    if DAILY_AT: threading.Thread(target=scheduler, daemon=True).start()
+    print(f"기업 등록 서버: http://{host}:{port}  ({'데모 데이터' if DEMO else '네이버 실제 수집'})"
+          + (f" · 접속 코드 사용" if ACCESS_CODE else "") + (f" · 매일 {DAILY_AT}(한국 시간) 자동 실행" if DAILY_AT else ""))
     ThreadingHTTPServer((host, port), H).serve_forever()

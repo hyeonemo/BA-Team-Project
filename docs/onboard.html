@@ -41,7 +41,7 @@ pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:12px;
 ol.steps{margin:0;padding-left:20px}
 ol.steps li{margin:4px 0}
 .err{color:var(--warn);font-size:12.5px;margin-top:4px}
-.srv{font-size:13px;color:var(--mute);margin:0 0 10px}
+.srv{font-size:13px;color:var(--mute);margin:4px 0 8px}
 .srv b{color:var(--ink)}
 .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mute);margin-right:6px}
 .dot.on{background:var(--ok)}
@@ -56,6 +56,20 @@ button:disabled{opacity:.45;cursor:not-allowed}
 .tl{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
 .tl td,.tl th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
 .tl th{color:var(--mute);font-weight:500}
+
+.final{margin:26px 0 18px;border:2px solid var(--brand);border-radius:18px;padding:22px 22px 20px;background:var(--card);background:color-mix(in srgb,var(--brand) 6%,var(--card));box-shadow:0 8px 28px rgba(43,89,255,.14)}
+.final-head{display:flex;gap:14px;align-items:center;margin-bottom:6px}
+.final-head h2{font-size:21px;margin:0}
+.final-head .hint{margin:2px 0 0}
+.badge{flex:none;width:38px;height:38px;border-radius:50%;background:var(--brand);color:var(--brand-ink);display:grid;place-items:center;font-weight:700;font-size:18px}
+.final-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start;margin-top:10px}
+@media(max-width:760px){.final-grid{grid-template-columns:minmax(0,1fr)}}
+button.big{width:100%;padding:16px 18px;font-size:19px;font-weight:700;border-radius:12px;background:var(--brand);color:var(--brand-ink);border:1px solid var(--brand);margin-top:12px}
+button.big:not(:disabled){animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(43,89,255,.45)}50%{box-shadow:0 0 0 9px rgba(43,89,255,0)}}
+@media(prefers-reduced-motion:reduce){button.big:not(:disabled){animation:none}}
+.why{margin:8px 2px 0;font-size:13.5px;color:var(--warn);min-height:1em}
+.jump{position:fixed;right:18px;bottom:18px;z-index:10;padding:12px 18px;border-radius:999px;background:var(--brand);color:var(--brand-ink);border:none;font-weight:700;box-shadow:0 6px 20px rgba(0,0,0,.25)}
 </style>
 </head>
 <body>
@@ -99,25 +113,6 @@ button:disabled{opacity:.45;cursor:not-allowed}
 
     <div>
       <div class="card">
-        <h2>등록 전 점검</h2>
-        <div class="stat" id="stat"></div>
-        <div id="warns"></div>
-      </div>
-
-      <div class="card" id="regcard">
-        <h2>등록</h2>
-        <p class="srv" id="srv"><span class="dot"></span>서버 확인 중…</p>
-        <div class="actions" style="margin-top:0"><button class="primary" id="reg" disabled>등록하기</button><span class="hint" id="regmsg"></span></div>
-        <ul class="stepl" id="stepl" hidden></ul>
-        <div id="result" hidden>
-          <label>슬랙으로 간 "연결 완료" 메시지</label>
-          <div class="slack" id="r-welcome"></div>
-          <label id="r-alerts-l">오늘 기준 알림</label>
-          <div class="slack" id="r-alerts"></div>
-        </div>
-      </div>
-
-      <div class="card">
         <h2>등록하면 일어나는 일</h2>
         <ol class="steps">
           <li>설정 파일 <code>tenants/<span id="slug">기업</span>/config.json</code> 이 만들어집니다.</li>
@@ -137,18 +132,53 @@ button:disabled{opacity:.45;cursor:not-allowed}
         <label>② 슬랙 주소 → 비밀 저장소 <code>TENANT_WEBHOOKS</code> 에 추가할 항목</label>
         <pre id="hookline"></pre>
         <div class="actions"><button id="copyh">항목 복사</button><span class="hint" id="cm2"></span></div>
-        <p class="hint">서버(scripts/server.py)에서 이 페이지를 열면 위 [등록하기]로 바로 등록됩니다. 서버 없이 열었다면 위 JSON을 운영자에게 넘기면 됩니다.</p>
-      </div>
-
-      <div class="card" id="tlcard" hidden>
-        <h2>등록된 기업</h2>
-        <table class="tl"><thead><tr><th>기업</th><th>제품</th><th>상태</th></tr></thead><tbody id="tl"></tbody></table>
+        <p class="hint">서버(scripts/server.py)에서 이 페이지를 열면 맨 아래 [등록하기]로 바로 등록됩니다. 서버 없이 열었다면 위 JSON을 운영자에게 넘기면 됩니다.</p>
       </div>
 
       <div class="actions"><button id="fill">예시 채우기</button><button id="clear" class="link">모두 비우기</button></div>
     </div>
   </div>
+
+  <section class="final" id="final">
+    <div class="final-head">
+      <span class="badge">4</span>
+      <div><h2>마지막 단계: 등록하기</h2><p class="hint">위 1~3번을 채웠다면 점검 결과를 확인하고 아래 버튼을 누르세요.</p></div>
+    </div>
+    <div class="final-grid">
+      <div>
+        <div class="stat" id="stat"></div>
+        <div id="warns"></div>
+      </div>
+      <div>
+        <p class="srv" id="srv"><span class="dot"></span>서버 확인 중…</p>
+        <div id="codewrap" hidden>
+          <label for="code">접속 코드</label>
+          <input id="code" type="password" autocomplete="off" placeholder="운영자에게 받은 접속 코드">
+        </div>
+        <button class="big" id="reg" disabled>등록하기</button>
+        <p class="why" id="why"></p>
+        <p class="hint" id="regmsg"></p>
+      </div>
+    </div>
+    <ul class="stepl" id="stepl" hidden></ul>
+    <div id="result" hidden>
+      <label>슬랙으로 간 "연결 완료" 메시지</label>
+      <div class="slack" id="r-welcome"></div>
+      <label id="r-alerts-l">오늘 기준 알림</label>
+      <div class="slack" id="r-alerts"></div>
+    </div>
+  </section>
+
+  <div class="card" id="tlcard" hidden>
+    <h2>등록된 기업과 자동 실행</h2>
+    <p class="hint" id="runinfo"></p>
+    <table class="tl"><thead><tr><th>기업</th><th>제품</th><th>상태</th></tr></thead><tbody id="tl"></tbody></table>
+    <div class="actions"><button id="runnow">지금 자동 실행 해 보기</button><span class="hint" id="runmsg"></span></div>
+    <pre id="runlog" hidden></pre>
+  </div>
 </div>
+
+<button id="jump" class="jump" hidden>↓ 마지막: 등록하기</button>
 
 <script>
 const $ = s => document.querySelector(s);
@@ -238,21 +268,30 @@ function fill(){
 $("#fill").onclick = fill;
 $("#clear").onclick = () => { $("#prods").innerHTML=""; ["brand","hook","extra"].forEach(i=>$("#"+i).value=""); $("#thr").value="1.0"; addProd(); render(); };
 
-// ---- 서버가 있을 때만: 등록·진행 상태·등록 목록 ----
+// ---- 서버가 있을 때만: 등록·진행 상태·등록 목록·자동 실행 ----
 let server = null, canReg = false, busy = false, timer = null;
 const STEPS = [["collect","과거 검색 데이터 받기"],["calibrate","연결 강도 계산"],["compute","기준선·알림 계산"],["notify","슬랙 발송"]];
-function syncReg(){ $("#reg").disabled = !(server && canReg && !busy); }
+const hdr = () => ({"X-Access-Code": $("#code").value});
+function syncReg(){
+  let why = "";
+  if(!server) why = "서버에서 열었을 때만 등록할 수 있습니다.";
+  else if(server.needs_code && !$("#code").value) why = "접속 코드를 입력해 주세요.";
+  else if(server.needs_code && !server.authed) why = "접속 코드가 맞지 않습니다.";
+  else if(!canReg) why = "브랜드 이름과 제품을 입력해 주세요.";
+  $("#reg").disabled = !!why || busy; $("#why").textContent = busy ? "" : why;
+}
 function renderServer(){
   const el = $("#srv"); el.textContent = "";
   const dot = document.createElement("span"); dot.className = "dot" + (server ? " on" : ""); el.appendChild(dot);
   el.appendChild(document.createTextNode(server
     ? (server.demo ? "서버 연결됨 · 데모 데이터로 계산합니다 (네이버 키 불필요)" : (server.keys ? "서버 연결됨 · 네이버에서 실제로 받아 옵니다" : "서버 연결됨 · 네이버 API 키가 없어 등록해도 실패합니다"))
-    : "서버 없이 열린 페이지입니다. 등록은 못 하고, 아래 JSON 복사만 됩니다. (python scripts/server.py 로 열어 보세요)"));
+    : "서버 없이 열린 페이지입니다. 등록은 못 하고, 위의 JSON 복사만 됩니다. (python3 scripts/server.py 로 열어 보세요)"));
+  $("#codewrap").hidden = !(server && server.needs_code);
   syncReg();
 }
 async function ping(){
-  try{ const r = await fetch("/api/ping", {cache:"no-store"}); const j = await r.json(); server = j && j.ok ? j : null; }catch(e){ server = null; }
-  renderServer(); if(server) loadTenants();
+  try{ const r = await fetch("/api/ping", {cache:"no-store", headers:hdr()}); const j = await r.json(); server = j && j.ok ? j : null; }catch(e){ server = null; }
+  renderServer(); if(server && server.authed){ loadTenants(); showRun(server); } else $("#tlcard").hidden = true;
 }
 function drawSteps(st){
   const ul = $("#stepl"); ul.hidden = false; ul.textContent = "";
@@ -270,7 +309,8 @@ async function poll(slug){
   clearInterval(timer);
   const tick = async () => {
     try{
-      const r = await fetch("/api/status?slug=" + encodeURIComponent(slug), {cache:"no-store"}); const st = await r.json();
+      const r = await fetch("/api/status?slug=" + encodeURIComponent(slug), {cache:"no-store", headers:hdr()}); const st = await r.json();
+      if(!r.ok){ clearInterval(timer); busy = false; syncReg(); $("#regmsg").textContent = st.error || "상태를 확인하지 못했습니다."; return; }
       drawSteps(st);
       if(st.done){
         clearInterval(timer); busy = false; syncReg(); loadTenants();
@@ -279,7 +319,7 @@ async function poll(slug){
         $("#r-welcome").textContent = st.result.welcome;
         $("#r-alerts-l").textContent = st.result.sent_to_slack ? "오늘 기준 알림 (슬랙으로 발송됨)" : "오늘 기준 알림 (슬랙으로 보내지 않고 화면에만 표시)";
         $("#r-alerts").textContent = st.result.alerts || "(오늘은 보낼 알림이 없습니다)";
-        $("#result").hidden = false;
+        $("#result").hidden = false; $("#result").scrollIntoView({behavior:"smooth", block:"nearest"});
       }
     }catch(e){ clearInterval(timer); busy = false; syncReg(); $("#regmsg").textContent = "서버와 연결이 끊겼습니다."; }
   };
@@ -289,7 +329,7 @@ $("#reg").onclick = async () => {
   const f = collect(); f.webhook = $("#hook").value.trim();
   $("#regmsg").textContent = ""; $("#result").hidden = true; busy = true; syncReg();
   try{
-    const r = await fetch("/api/register", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(f)});
+    const r = await fetch("/api/register", {method:"POST", headers:{"Content-Type":"application/json", ...hdr()}, body:JSON.stringify(f)});
     const j = await r.json();
     if(!r.ok){ $("#regmsg").textContent = j.error || "등록하지 못했습니다."; busy = false; syncReg(); return; }
     const extra = (j.demo_dropped && j.demo_dropped.length) ? ` 데모 데이터에 없는 키워드 ${j.demo_dropped.length}개는 뺐습니다.` : "";
@@ -299,8 +339,9 @@ $("#reg").onclick = async () => {
 };
 async function loadTenants(){
   try{
-    const r = await fetch("/api/tenants", {cache:"no-store"}); const j = await r.json(); const tb = $("#tl"); tb.textContent = "";
-    $("#tlcard").hidden = !j.tenants.length;
+    const r = await fetch("/api/tenants", {cache:"no-store", headers:hdr()}); if(!r.ok){ $("#tlcard").hidden = true; return; }
+    const j = await r.json(); const tb = $("#tl"); tb.textContent = ""; $("#tlcard").hidden = false;
+    if(!j.tenants.length){ const tr = document.createElement("tr"), td = document.createElement("td"); td.colSpan = 3; td.textContent = "아직 등록된 기업이 없습니다."; tr.appendChild(td); tb.appendChild(tr); }
     j.tenants.forEach(t => {
       const tr = document.createElement("tr");
       [t.brand, t.products + "개", t.done ? (t.stage === "error" ? "실패" : "운영 중") : "준비 중"].forEach(x => { const td = document.createElement("td"); td.textContent = x; tr.appendChild(td); });
@@ -308,6 +349,29 @@ async function loadTenants(){
     });
   }catch(e){}
 }
+function showRun(j){
+  const lr = j.last_run || {};
+  $("#runinfo").textContent = (j.daily_at ? `자동 실행: 매일 ${j.daily_at} (한국 시간)` : "자동 실행: 꺼짐 (아래 버튼으로 직접 실행)") + (lr.at ? ` · 마지막 실행 ${lr.at.replace("T"," ")}` : "");
+  $("#runlog").hidden = !lr.log; $("#runlog").textContent = lr.log || "";
+  $("#runnow").disabled = !!lr.running;
+}
+$("#runnow").onclick = async () => {
+  $("#runmsg").textContent = "실행 중…"; $("#runnow").disabled = true;
+  try{
+    const r = await fetch("/api/run-now", {method:"POST", headers:hdr()}); const j = await r.json();
+    if(!r.ok){ $("#runmsg").textContent = j.error || "실행하지 못했습니다."; $("#runnow").disabled = false; return; }
+    const t = setInterval(async () => {
+      try{ const p = await (await fetch("/api/ping", {cache:"no-store", headers:hdr()})).json(); showRun(p);
+        if(!p.last_run.running){ clearInterval(t); $("#runmsg").textContent = "끝났습니다."; $("#runnow").disabled = false; loadTenants(); } }catch(e){ clearInterval(t); $("#runmsg").textContent = "연결이 끊겼습니다."; }
+    }, 1500);
+  }catch(e){ $("#runmsg").textContent = "서버에 연결하지 못했습니다."; $("#runnow").disabled = false; }
+};
+$("#code").addEventListener("input", syncReg);
+$("#code").addEventListener("change", ping);
+// 마지막 단계가 화면에 안 보이는 동안 "↓ 등록하기" 안내 버튼을 띄운다
+$("#jump").onclick = () => $("#final").scrollIntoView({behavior:"smooth", block:"center"});
+if("IntersectionObserver" in window){ new IntersectionObserver(es => { $("#jump").hidden = es[0].isIntersecting; }, {threshold:0.2}).observe($("#final")); }
+else $("#jump").hidden = false;
 fill(); ping();
 </script>
 </body>

@@ -19,6 +19,11 @@ BASE = json.load(open(os.path.join(REPO, "config.json"), encoding="utf-8"))   # 
 MIN_POOL = 8          # 시장 공통 변화를 빼려면 비교 키워드가 이 정도는 있어야 한다
 
 
+def LOG(*a):
+    """진행 기록. 웹 서버가 이 함수를 바꿔 끼워 화면에 보여 준다."""
+    print(*a)
+
+
 def slugify(name):
     s = re.sub(r"[^0-9A-Za-z가-힣]+", "-", name).strip("-")
     return s or hashlib.sha1(name.encode()).hexdigest()[:6]
@@ -129,10 +134,10 @@ def run_tenant(slug, hooks, dry, weekly, skip_collect):
     latest = json.load(open(os.path.join(tdir, "data", "latest.json"), encoding="utf-8"))
     if first:
         msg = welcome(cfg, weights, latest["asof"])
-        if hook: print(f"[{slug}] 환영 메시지 발송", post(hook, msg))
-        else: print(f"[{slug}] --- 드라이런(환영) ---\n{msg}\n")
+        if hook: LOG(f"[{slug}] 환영 메시지 발송", post(hook, msg))
+        else: LOG(f"[{slug}] --- 드라이런(환영) ---\n{msg}\n")
     out = _py("notify.py", tdir, *(["--weekly"] if weekly else []), *(["--dry"] if (dry or not hook) else []), webhook=hook)
-    print(f"[{slug}] " + out.strip().replace("\n", "\n    "))
+    LOG(f"[{slug}] " + out.strip().replace("\n", "\n    "))
 
 
 HOOK_FILE = os.path.join(TENANTS, ".webhooks.json")      # 웹 서버가 받은 슬랙 주소 (git 에는 올리지 않는다)
@@ -150,12 +155,12 @@ def run(dry=False, weekly=False, only=None, skip_collect=False):
     hooks = load_hooks()
     slugs = sorted(d for d in (os.listdir(TENANTS) if os.path.isdir(TENANTS) else [])
                    if os.path.exists(os.path.join(TENANTS, d, "config.json")) and (not only or d == only))
-    print(f"기업 {len(slugs)}곳 실행")
+    LOG(f"기업 {len(slugs)}곳 실행")
     fail = 0
     for s in slugs:
         try: run_tenant(s, hooks, dry, weekly, skip_collect)
         except Exception:
-            fail += 1; print(f"[{s}] 실패(다른 기업은 계속):"); traceback.print_exc()
+            fail += 1; LOG(f"[{s}] 실패(다른 기업은 계속): " + traceback.format_exc()[-400:])
     return fail
 
 

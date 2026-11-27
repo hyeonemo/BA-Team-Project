@@ -1,0 +1,6 @@
+.git
+__pycache__/
+tenants/*
+!tenants/_examples
+.env
+*.key
