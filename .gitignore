@@ -2,3 +2,4 @@
 *.key
 .key.txt
 __pycache__/
+tenants/.webhooks.json

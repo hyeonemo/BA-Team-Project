@@ -41,6 +41,21 @@ pre{background:var(--code);color:var(--codeink);border-radius:10px;padding:12px;
 ol.steps{margin:0;padding-left:20px}
 ol.steps li{margin:4px 0}
 .err{color:var(--warn);font-size:12.5px;margin-top:4px}
+.srv{font-size:13px;color:var(--mute);margin:0 0 10px}
+.srv b{color:var(--ink)}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--mute);margin-right:6px}
+.dot.on{background:var(--ok)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.stepl{list-style:none;margin:12px 0 0;padding:0}
+.stepl li{display:flex;gap:10px;align-items:center;padding:5px 0;color:var(--mute)}
+.stepl li .mk{width:20px;text-align:center;font-weight:700}
+.stepl li.now{color:var(--ink);font-weight:500}
+.stepl li.ok{color:var(--ink)}
+.stepl li.ok .mk{color:var(--ok)}
+.stepl li.bad{color:var(--warn)}
+.tl{width:100%;border-collapse:collapse;font-size:13.5px;margin-top:6px}
+.tl td,.tl th{padding:6px 4px;border-bottom:1px solid var(--line);text-align:left}
+.tl th{color:var(--mute);font-weight:500}
 </style>
 </head>
 <body>
@@ -63,7 +78,7 @@ ol.steps li{margin:4px 0}
           <div>
             <label for="hook">슬랙 웹훅 주소</label>
             <input id="hook" placeholder="https://hooks.slack.com/services/...">
-            <p class="hint">설정 파일에는 들어가지 않고 비밀 저장소로만 갑니다</p>
+            <p class="hint">설정 파일에는 들어가지 않습니다. 비워 두면 화면에만 보여 줍니다</p>
           </div>
         </div>
       </div>
@@ -89,11 +104,24 @@ ol.steps li{margin:4px 0}
         <div id="warns"></div>
       </div>
 
+      <div class="card" id="regcard">
+        <h2>등록</h2>
+        <p class="srv" id="srv"><span class="dot"></span>서버 확인 중…</p>
+        <div class="actions" style="margin-top:0"><button class="primary" id="reg" disabled>등록하기</button><span class="hint" id="regmsg"></span></div>
+        <ul class="stepl" id="stepl" hidden></ul>
+        <div id="result" hidden>
+          <label>슬랙으로 간 "연결 완료" 메시지</label>
+          <div class="slack" id="r-welcome"></div>
+          <label id="r-alerts-l">오늘 기준 알림</label>
+          <div class="slack" id="r-alerts"></div>
+        </div>
+      </div>
+
       <div class="card">
         <h2>등록하면 일어나는 일</h2>
         <ol class="steps">
           <li>설정 파일 <code>tenants/<span id="slug">기업</span>/config.json</code> 이 만들어집니다.</li>
-          <li>다음 자동 실행(매일 07:30)에서 키워드 <b id="nk">0</b>개의 과거 검색 흐름을 한 번에 받습니다.</li>
+          <li>등록 직후(서버) 또는 다음 자동 실행(매일 07:30)에서 키워드 <b id="nk">0</b>개의 과거 검색 흐름을 한 번에 받습니다.</li>
           <li>제품과 연결 키워드가 함께 움직인 정도(연결 강도)를 자동 계산합니다.</li>
           <li>슬랙에 아래 "연결 완료" 메시지가 오고, 그날부터 급등 시작·확대·완화·종료 알림이 옵니다.</li>
         </ol>
@@ -109,7 +137,12 @@ ol.steps li{margin:4px 0}
         <label>② 슬랙 주소 → 비밀 저장소 <code>TENANT_WEBHOOKS</code> 에 추가할 항목</label>
         <pre id="hookline"></pre>
         <div class="actions"><button id="copyh">항목 복사</button><span class="hint" id="cm2"></span></div>
-        <p class="hint">이 시연 페이지는 서버가 없어서 제출 버튼이 없습니다. 실제 서비스에서는 이 내용이 서버로 바로 전달됩니다.</p>
+        <p class="hint">서버(scripts/server.py)에서 이 페이지를 열면 위 [등록하기]로 바로 등록됩니다. 서버 없이 열었다면 위 JSON을 운영자에게 넘기면 됩니다.</p>
+      </div>
+
+      <div class="card" id="tlcard" hidden>
+        <h2>등록된 기업</h2>
+        <table class="tl"><thead><tr><th>기업</th><th>제품</th><th>상태</th></tr></thead><tbody id="tl"></tbody></table>
       </div>
 
       <div class="actions"><button id="fill">예시 채우기</button><button id="clear" class="link">모두 비우기</button></div>
@@ -164,9 +197,14 @@ function render(){
   if(!f.products.length) warns.push("제품을 하나 이상 넣어 주세요.");
   if(f.products.length && pool.length < MIN_POOL) warns.push(`비교 키워드가 ${pool.length}개뿐입니다. 시장 공통 변화를 정확히 빼려면 ${MIN_POOL}개 이상을 권장합니다 (3번 칸에 더 넣어 주세요).`);
   f.products.forEach(p => { if(!p.ing.length && !p.cat.length) warns.push(`"${p.name}" 은 연결 키워드가 없어 제품 자체 검색만 봅니다.`); });
-  if(!/^https:\/\/hooks\.slack\.com\//.test($("#hook").value.trim())) warns.push("슬랙 웹훅 주소가 아직 올바르지 않습니다 (https://hooks.slack.com/ 으로 시작).");
+  const hv = $("#hook").value.trim();
+  if(hv && !/^https:\/\/hooks\.slack\.com\/services\//.test(hv)) warns.push("슬랙 웹훅 주소가 올바르지 않습니다 (https://hooks.slack.com/services/ 로 시작).");
+  else if(!hv) warns.push("슬랙 웹훅 주소가 없으면 알림이 화면에만 표시되고 슬랙으로는 가지 않습니다.");
   $("#stat").innerHTML = `<span class="pill">제품 <b>${f.products.length}</b></span><span class="pill">전체 키워드 <b>${all.length}</b></span><span class="pill">처음 받을 때 API <b>${all.length}</b>번</span>`;
-  $("#warns").innerHTML = warns.length ? warns.map(w=>`<div class="warn">${w}</div>`).join("") : `<p class="ok" style="margin:10px 0 0">✓ 등록할 수 있는 상태입니다.</p>`;
+  const wb = $("#warns"); wb.textContent = "";
+  if(warns.length) warns.forEach(w => { const d = document.createElement("div"); d.className = "warn"; d.textContent = w; wb.appendChild(d); });
+  else { const p = document.createElement("p"); p.className = "ok"; p.style.margin = "10px 0 0"; p.textContent = "✓ 등록할 수 있는 상태입니다."; wb.appendChild(p); }
+  canReg = !!f.brand && f.products.length > 0; syncReg();
   const slug = slugify(f.brand); $("#slug").textContent = slug; $("#nk").textContent = all.length;
   const today = new Date(); const asof = new Date(today.getTime()-864e5).toISOString().slice(0,10);
   $("#preview").textContent = `[연결 완료] ${f.brand||"브랜드"} · 기준일 ${asof}\n• 키워드 ${all.length}개의 과거 검색 흐름을 받아 기준선을 만들었습니다.\n• 알림 기준: 평소 폭의 ${f.threshold.toFixed(1)}배 이상 · 기준 아래로 3일 연속 내려가면 종료\n` +
@@ -189,7 +227,7 @@ $("#addp").onclick = () => { addProd(); render(); };
 
 function fill(){
   $("#prods").innerHTML = "";
-  $("#brand").value = "데모브랜드"; $("#thr").value = "1.0"; $("#hook").value = "https://hooks.slack.com/services/T000/B000/XXXXXXXX";
+  $("#brand").value = "데모브랜드"; $("#thr").value = "1.0"; $("#hook").value = "";
   $("#extra").value = "트라넥삼산, 레티날, PDRN, 히알루론산, 나이아신아마이드, 판테놀, 펩타이드, 수분크림";
   addProd({name:"에이시카365", ing:["센텔라","시카"], cat:["진정크림"], competitor_label:"시카·진정 크림", competitors:["브링그린 티트리 시카","바이오더마 시카비오","메디힐 마데카소사이드"]});
   addProd({name:"아토베리어365 크림", ing:["세라마이드"], cat:["장벽크림"], competitors:["제로이드 인텐시브","피지오겔 DMT"]});
@@ -197,7 +235,78 @@ function fill(){
 }
 $("#fill").onclick = fill;
 $("#clear").onclick = () => { $("#prods").innerHTML=""; ["brand","hook","extra"].forEach(i=>$("#"+i).value=""); $("#thr").value="1.0"; addProd(); render(); };
-fill();
+
+// ---- 서버가 있을 때만: 등록·진행 상태·등록 목록 ----
+let server = null, canReg = false, busy = false, timer = null;
+const STEPS = [["collect","과거 검색 데이터 받기"],["calibrate","연결 강도 계산"],["compute","기준선·알림 계산"],["notify","슬랙 발송"]];
+function syncReg(){ $("#reg").disabled = !(server && canReg && !busy); }
+function renderServer(){
+  const el = $("#srv"); el.textContent = "";
+  const dot = document.createElement("span"); dot.className = "dot" + (server ? " on" : ""); el.appendChild(dot);
+  el.appendChild(document.createTextNode(server
+    ? (server.demo ? "서버 연결됨 · 데모 데이터로 계산합니다 (네이버 키 불필요)" : (server.keys ? "서버 연결됨 · 네이버에서 실제로 받아 옵니다" : "서버 연결됨 · 네이버 API 키가 없어 등록해도 실패합니다"))
+    : "서버 없이 열린 페이지입니다. 등록은 못 하고, 아래 JSON 복사만 됩니다. (python scripts/server.py 로 열어 보세요)"));
+  syncReg();
+}
+async function ping(){
+  try{ const r = await fetch("/api/ping", {cache:"no-store"}); const j = await r.json(); server = j && j.ok ? j : null; }catch(e){ server = null; }
+  renderServer(); if(server) loadTenants();
+}
+function drawSteps(st){
+  const ul = $("#stepl"); ul.hidden = false; ul.textContent = "";
+  const idx = STEPS.findIndex(x => x[0] === st.stage);
+  STEPS.forEach(([id,label],i) => {
+    const li = document.createElement("li"), mk = document.createElement("span"); mk.className = "mk";
+    let cls = "", sym = "·";
+    if(st.stage === "done" || i < idx){ cls = "ok"; sym = "✓"; }
+    else if(st.stage === "error" && i === Math.max(idx,0)){ cls = "bad"; sym = "✗"; }
+    else if(i === idx){ cls = "now"; sym = "…"; }
+    li.className = cls; mk.textContent = sym; li.appendChild(mk); li.appendChild(document.createTextNode(label)); ul.appendChild(li);
+  });
+}
+async function poll(slug){
+  clearInterval(timer);
+  const tick = async () => {
+    try{
+      const r = await fetch("/api/status?slug=" + encodeURIComponent(slug), {cache:"no-store"}); const st = await r.json();
+      drawSteps(st);
+      if(st.done){
+        clearInterval(timer); busy = false; syncReg(); loadTenants();
+        if(st.error){ $("#regmsg").textContent = "실패: " + st.error; return; }
+        $("#regmsg").textContent = st.result.slack_error || "등록이 끝났습니다.";
+        $("#r-welcome").textContent = st.result.welcome;
+        $("#r-alerts-l").textContent = st.result.sent_to_slack ? "오늘 기준 알림 (슬랙으로 발송됨)" : "오늘 기준 알림 (슬랙으로 보내지 않고 화면에만 표시)";
+        $("#r-alerts").textContent = st.result.alerts || "(오늘은 보낼 알림이 없습니다)";
+        $("#result").hidden = false;
+      }
+    }catch(e){ clearInterval(timer); busy = false; syncReg(); $("#regmsg").textContent = "서버와 연결이 끊겼습니다."; }
+  };
+  timer = setInterval(tick, 1200); tick();
+}
+$("#reg").onclick = async () => {
+  const f = collect(); f.webhook = $("#hook").value.trim();
+  $("#regmsg").textContent = ""; $("#result").hidden = true; busy = true; syncReg();
+  try{
+    const r = await fetch("/api/register", {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(f)});
+    const j = await r.json();
+    if(!r.ok){ $("#regmsg").textContent = j.error || "등록하지 못했습니다."; busy = false; syncReg(); return; }
+    const extra = (j.demo_dropped && j.demo_dropped.length) ? ` 데모 데이터에 없는 키워드 ${j.demo_dropped.length}개는 뺐습니다.` : "";
+    $("#regmsg").textContent = `등록했습니다 (제품 ${j.products}개, 키워드 ${j.keywords}개).` + extra;
+    poll(j.slug);
+  }catch(e){ $("#regmsg").textContent = "서버에 연결하지 못했습니다."; busy = false; syncReg(); }
+};
+async function loadTenants(){
+  try{
+    const r = await fetch("/api/tenants", {cache:"no-store"}); const j = await r.json(); const tb = $("#tl"); tb.textContent = "";
+    $("#tlcard").hidden = !j.tenants.length;
+    j.tenants.forEach(t => {
+      const tr = document.createElement("tr");
+      [t.brand, t.products + "개", t.done ? (t.stage === "error" ? "실패" : "운영 중") : "준비 중"].forEach(x => { const td = document.createElement("td"); td.textContent = x; tr.appendChild(td); });
+      tb.appendChild(tr);
+    });
+  }catch(e){}
+}
+fill(); ping();
 </script>
 </body>
 </html>

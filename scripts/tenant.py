@@ -135,8 +135,19 @@ def run_tenant(slug, hooks, dry, weekly, skip_collect):
     print(f"[{slug}] " + out.strip().replace("\n", "\n    "))
 
 
+HOOK_FILE = os.path.join(TENANTS, ".webhooks.json")      # 웹 서버가 받은 슬랙 주소 (git 에는 올리지 않는다)
+
+
+def load_hooks():
+    """슬랙 주소: 로컬 파일(웹 서버 등록분) + 환경변수 TENANT_WEBHOOKS(깃허브 시크릿). 같은 기업이면 환경변수가 우선."""
+    hooks = {}
+    if os.path.exists(HOOK_FILE): hooks.update(json.load(open(HOOK_FILE, encoding="utf-8")))
+    hooks.update(json.loads(os.environ.get("TENANT_WEBHOOKS") or "{}"))
+    return hooks
+
+
 def run(dry=False, weekly=False, only=None, skip_collect=False):
-    hooks = json.loads(os.environ.get("TENANT_WEBHOOKS") or "{}")
+    hooks = load_hooks()
     slugs = sorted(d for d in (os.listdir(TENANTS) if os.path.isdir(TENANTS) else [])
                    if os.path.exists(os.path.join(TENANTS, d, "config.json")) and (not only or d == only))
     print(f"기업 {len(slugs)}곳 실행")
