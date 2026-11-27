@@ -19,8 +19,7 @@ from urllib.parse import urlparse, parse_qs
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import tenant as T
 
-DOCS = os.path.join(T.REPO, "docs")
-PAGES = {"/": "app.html", "/app.html": "app.html", "/onboard.html": "onboard.html", "/simulator.html": "simulator.html"}
+PAGE = os.path.join(T.REPO, "docs", "onboard.html")
 DEMO_CSV = os.path.join(T.REPO, "data", "search_daily.csv")
 MAX_BODY = 100_000
 HOOK_RE = re.compile(r"^https://hooks\.slack\.com/services/[A-Za-z0-9/_-]+$")
@@ -230,8 +229,8 @@ class H(BaseHTTPRequestHandler):
 
     def do_GET(self):
         u = urlparse(self.path)
-        if u.path in PAGES:
-            b = open(os.path.join(DOCS, PAGES[u.path]), "rb").read()
+        if u.path in ("/", "/onboard.html"):
+            b = open(PAGE, "rb").read()
             self.send_response(200); self.send_header("Content-Type", "text/html; charset=utf-8"); self.send_header("Content-Length", str(len(b))); self.end_headers(); self.wfile.write(b)
         elif u.path == "/api/ping":
             info = {"ok": True, "demo": DEMO, "keys": bool(os.environ.get("NAVER_CLIENT_ID") and os.environ.get("NAVER_CLIENT_SECRET")),
