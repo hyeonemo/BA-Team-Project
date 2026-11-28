@@ -1,31 +1,31 @@
 {
- "asof": "2026-11-26",
+ "asof": "2026-11-27",
  "threshold": 1.0,
- "market_common_z": -0.32,
+ "market_common_z": -0.28,
  "products": {
   "아토베리어365 크림": {
    "mode": "score",
-   "score": 0.081,
-   "ratio": 0.59,
+   "score": 0.078,
+   "ratio": 0.54,
    "status": "진행(둔화)",
    "contrib": {
     "장벽크림": {
-     "z_adj": 0.3,
+     "z_adj": 0.4,
      "weight": 0.26,
-     "part": 0.078
+     "part": 0.103
     },
     "세라마이드": {
-     "z_adj": 0.02,
+     "z_adj": -0.13,
      "weight": 0.2,
-     "part": 0.004
+     "part": -0.025
     }
    },
-   "own_z": 0.59,
+   "own_z": 0.54,
    "score_ratio": 0.27,
-   "own_ratio": 0.59,
+   "own_ratio": 0.54,
    "trigger": null,
-   "ing_ratio": 0.0,
-   "cat_ratio": 0.37,
+   "ing_ratio": -0.13,
+   "cat_ratio": 0.5,
    "layers": {
     "ing": [
      "세라마이드"
@@ -38,58 +38,56 @@
    "last_event": "2026-11-16",
    "event": {
     "start": "2026-11-16",
-    "day_n": 11,
+    "day_n": 12,
     "peak": 1.21,
     "peak_day": "2026-11-19",
-    "below": 2,
-    "prev": 0.74,
-    "phase": "둔화"
+    "below": 3,
+    "prev": 0.59,
+    "phase": "종료"
    },
    "competitors": {
     "label": "장벽·보습 크림",
     "items": [
      {
       "name": "제로이드 인텐시브",
-      "z": -0.33,
-      "pct": -11
+      "z": -0.22,
+      "pct": -8
      },
      {
       "name": "피지오겔 DMT",
-      "z": 0.3,
-      "pct": 5
+      "z": 0.2,
+      "pct": 2
      },
      {
       "name": "리얼베리어 크림",
-      "z": 1.07,
-      "pct": 34
+      "z": 0.93,
+      "pct": 29
      }
     ],
-    "median_z": 0.3,
-    "our_z": 0.59,
-    "hot": [
-     "리얼베리어 크림"
-    ],
+    "median_z": 0.2,
+    "our_z": 0.54,
+    "hot": [],
     "verdict": "경쟁·우리 모두 큰 변화 없음"
    }
   },
   "에이시카365": {
    "mode": "score",
-   "score": -0.172,
-   "ratio": 1.82,
+   "score": -0.095,
+   "ratio": 2.02,
    "status": "진행(유지·확대)",
    "contrib": {
     "시카": {
-     "z_adj": -0.52,
+     "z_adj": -0.29,
      "weight": 0.33,
-     "part": -0.172
+     "part": -0.095
     }
    },
-   "own_z": 1.82,
-   "score_ratio": -0.63,
-   "own_ratio": 1.82,
+   "own_z": 2.02,
+   "score_ratio": -0.37,
+   "own_ratio": 2.02,
    "trigger": "own",
-   "ing_ratio": -0.63,
-   "cat_ratio": 0.0,
+   "ing_ratio": -0.37,
+   "cat_ratio": -0.07,
    "layers": {
     "ing": [
      "시카"
@@ -102,11 +100,11 @@
    "last_event": "2026-11-24",
    "event": {
     "start": "2026-11-24",
-    "day_n": 3,
-    "peak": 1.82,
-    "peak_day": "2026-11-26",
+    "day_n": 4,
+    "peak": 2.02,
+    "peak_day": "2026-11-27",
     "below": 0,
-    "prev": 1.44,
+    "prev": 1.82,
     "phase": "확대"
    },
    "competitors": {
@@ -114,49 +112,49 @@
     "items": [
      {
       "name": "브링그린 티트리 시카",
-      "z": -0.9,
-      "pct": -19
+      "z": -0.51,
+      "pct": -11
      },
      {
       "name": "바이오더마 시카비오",
-      "z": 0.91,
-      "pct": 16
+      "z": 0.62,
+      "pct": 10
      },
      {
       "name": "메디힐 마데카소사이드",
-      "z": -0.13,
-      "pct": -7
+      "z": 0.01,
+      "pct": -5
      }
     ],
-    "median_z": -0.13,
-    "our_z": 1.82,
+    "median_z": 0.01,
+    "our_z": 2.02,
     "hot": [],
     "verdict": "우리만 상승 (경쟁은 평소 수준)"
    }
   },
   "테라크네365": {
    "mode": "score",
-   "score": -0.284,
-   "ratio": -0.91,
+   "score": -0.262,
+   "ratio": -0.85,
    "status": "알림 없음",
    "contrib": {
     "시카": {
-     "z_adj": -0.52,
+     "z_adj": -0.29,
      "weight": 0.24,
-     "part": -0.125
+     "part": -0.069
     },
     "나이아신아마이드": {
-     "z_adj": -0.76,
+     "z_adj": -0.92,
      "weight": 0.21,
-     "part": -0.159
+     "part": -0.193
     }
    },
-   "own_z": -2.86,
-   "score_ratio": -0.91,
-   "own_ratio": -2.86,
+   "own_z": -2.78,
+   "score_ratio": -0.85,
+   "own_ratio": -2.78,
    "trigger": null,
-   "ing_ratio": -0.92,
-   "cat_ratio": 2.12,
+   "ing_ratio": -0.87,
+   "cat_ratio": 1.7,
    "layers": {
     "ing": [
      "시카",
@@ -174,44 +172,44 @@
     "items": [
      {
       "name": "제로이드 핌프로브",
-      "z": -1.32,
-      "pct": -16
+      "z": -1.05,
+      "pct": -13
      },
      {
       "name": "파티온 노스카나인",
-      "z": -0.99,
-      "pct": -19
+      "z": -0.89,
+      "pct": -17
      },
      {
       "name": "넘버즈인 1번",
-      "z": -0.66,
-      "pct": -20
+      "z": -0.77,
+      "pct": -22
      }
     ],
-    "median_z": -0.99,
-    "our_z": -2.86,
+    "median_z": -0.89,
+    "our_z": -2.78,
     "hot": [],
     "verdict": "경쟁·우리 모두 큰 변화 없음"
    }
   },
   "리제덤365(PDRN 캡슐크림)": {
    "mode": "score",
-   "score": 0.004,
-   "ratio": 0.0,
+   "score": -0.029,
+   "ratio": -0.04,
    "status": "알림 없음",
    "contrib": {
     "세라마이드": {
-     "z_adj": 0.02,
+     "z_adj": -0.13,
      "weight": 0.23,
-     "part": 0.004
+     "part": -0.029
     }
    },
-   "own_z": -0.19,
-   "score_ratio": 0.0,
-   "own_ratio": -0.19,
+   "own_z": -0.04,
+   "score_ratio": -0.13,
+   "own_ratio": -0.04,
    "trigger": null,
-   "ing_ratio": -0.43,
-   "cat_ratio": 0.21,
+   "ing_ratio": -0.58,
+   "cat_ratio": 0.04,
    "layers": {
     "ing": [
      "PDRN",
@@ -229,22 +227,22 @@
     "items": [
      {
       "name": "메디큐브 PDRN",
-      "z": 0.56,
-      "pct": 17
+      "z": -0.05,
+      "pct": -2
      },
      {
       "name": "아누아 PDRN",
-      "z": -0.41,
-      "pct": -20
+      "z": -0.35,
+      "pct": -19
      },
      {
       "name": "리쥬란 힐러",
-      "z": 1.07,
-      "pct": 6
+      "z": 2.47,
+      "pct": 20
      }
     ],
-    "median_z": 0.56,
-    "our_z": -0.19,
+    "median_z": -0.05,
+    "our_z": -0.04,
     "hot": [
      "리쥬란 힐러"
     ],
@@ -253,7 +251,7 @@
   }
  },
  "reference": {
-  "에스트라": 1.9,
-  "아토베리어": 1.84
+  "에스트라": 1.12,
+  "아토베리어": 1.64
  }
 }
